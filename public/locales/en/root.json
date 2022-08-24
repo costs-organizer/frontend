@@ -1,0 +1,11 @@
+{
+  "breadcrumbs": {
+    "root": "Root"
+  },
+  "views": {
+    "root": {
+      "message": "Welcome to the Root module"
+    }
+  },
+  "components": {}
+}

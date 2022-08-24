@@ -1,0 +1,11 @@
+schema: http://localhost:3001/graphql
+documents: 'src/graphql/**/*.ts'
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - typescript-rtk-query:
+          importBaseApiFrom: '../app/api/baseApi'
+          exportHooks: true
+          overrideExisting: 'module.hot?.status() === "apply"'
