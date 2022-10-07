@@ -1,12 +1,19 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Grid } from '@mui/material'
+import { paths } from 'config'
 import { Form, LoadingButton, TextField } from 'shared/components'
 import { LoginFormFields, useLoginForm } from './LoginForm.utils'
 
 interface LoginFormProps {}
 
 const LoginForm: FunctionComponent<LoginFormProps> = () => {
-  const { isLoading, error, ...formProps } = useLoginForm()
+  const { isSuccess, isLoading, error, ...formProps } = useLoginForm()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (isSuccess) navigate(paths.groups)
+  }, [isSuccess, navigate])
 
   return (
     <Form {...formProps}>

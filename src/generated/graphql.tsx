@@ -103,11 +103,11 @@ export type Mutation = {
   createGroup: Scalars['Int']
   joinCost: Scalars['Int']
   login: Scalars['String']
+  logout: Scalars['String']
   register: User
   removeCost: Scalars['Int']
   removeUser: User
   removeUserFromGroup: Scalars['Int']
-  updateUser: Scalars['Int']
 }
 
 export type MutationAddNewUsersArgs = {
@@ -150,10 +150,6 @@ export type MutationRemoveUserFromGroupArgs = {
   removeUserFromGroupInput: RemoveUserFromGroupInput
 }
 
-export type MutationUpdateUserArgs = {
-  updateUserInput: FindAllUsersInput
-}
-
 export type Notification = {
   __typename?: 'Notification'
   createdAt?: Maybe<Scalars['DateTime']>
@@ -182,6 +178,7 @@ export type Query = {
   costs: Array<Cost>
   group: Group
   groups: Array<Group>
+  me: User
   transaction: Transaction
   transactions: Array<Transaction>
   user: User
@@ -271,6 +268,17 @@ export type LoginMutationVariables = Exact<{
 }>
 
 export type LoginMutation = { __typename?: 'Mutation'; login: string }
+
+export type LogoutMutationVariables = Exact<{ [key: string]: never }>
+
+export type LogoutMutation = { __typename?: 'Mutation'; logout: string }
+
+export type MeQueryVariables = Exact<{ [key: string]: never }>
+
+export type MeQuery = {
+  __typename?: 'Query'
+  me: { __typename?: 'User'; id: number; username: string }
+}
 
 export type RegisterMutationVariables = Exact<{
   inp: RegisterInput
@@ -383,6 +391,7 @@ export type GetGroupQuery = {
     __typename?: 'Group'
     id: number
     createdAt?: any | null
+    name: string
     createdBy: { __typename?: 'User'; id: number; username: string }
     members: Array<{ __typename?: 'User'; id: number; username: string }>
     costs: Array<{
@@ -464,6 +473,19 @@ export type GetUsersQuery = {
 export const LoginDocument = `
     mutation Login($inp: LoginInput!) {
   login(loginInput: $inp)
+}
+    `
+export const LogoutDocument = `
+    mutation Logout {
+  logout
+}
+    `
+export const MeDocument = `
+    query Me {
+  me {
+    id
+    username
+  }
 }
     `
 export const RegisterDocument = `
@@ -560,6 +582,7 @@ export const GetGroupDocument = `
   group(id: $inp) {
     id
     createdAt
+    name
     createdBy {
       id
       username
@@ -640,10 +663,15 @@ export const GetUsersDocument = `
     `
 
 const injectedRtkApi = api.injectEndpoints({
-  overrideExisting: module.hot?.status() === 'apply',
   endpoints: build => ({
     Login: build.mutation<LoginMutation, LoginMutationVariables>({
       query: variables => ({ document: LoginDocument, variables }),
+    }),
+    Logout: build.mutation<LogoutMutation, LogoutMutationVariables | void>({
+      query: variables => ({ document: LogoutDocument, variables }),
+    }),
+    Me: build.query<MeQuery, MeQueryVariables | void>({
+      query: variables => ({ document: MeDocument, variables }),
     }),
     Register: build.mutation<RegisterMutation, RegisterMutationVariables>({
       query: variables => ({ document: RegisterDocument, variables }),
@@ -727,6 +755,9 @@ const injectedRtkApi = api.injectEndpoints({
 export { injectedRtkApi as api }
 export const {
   useLoginMutation,
+  useLogoutMutation,
+  useMeQuery,
+  useLazyMeQuery,
   useRegisterMutation,
   useCreateCostMutation,
   useGetCostQuery,

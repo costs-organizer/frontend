@@ -5,6 +5,7 @@ export const getSingleGroupQuery = gql`
     group(id: $inp) {
       id
       createdAt
+      name
       createdBy {
         id
         username

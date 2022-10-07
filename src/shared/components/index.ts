@@ -14,11 +14,17 @@ export { default as Loader } from './Loader'
 export type { LoaderProps } from './Loader'
 
 export { default as TopBar } from './TopBar'
-export type { TopBarProps } from './TopBar'
 
 export { default as ActionButton } from './ActionButton'
 export type { ActionButtonProps } from './ActionButton'
 
 export { default as TextField } from './TextField'
+export { default as AutocompleteField } from './AutocompleteField'
 
 export { default as LoadingButton } from './LoadingButton'
+
+export { default as Tabs } from './Tabs'
+
+export * from './DialogContent'
+
+export * from './DataTable'

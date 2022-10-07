@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useLoginMutation } from 'generated/graphql'
 import { object, SchemaOf, string } from 'yup'
-import { useLoginMutation } from 'shared/store/auth'
 
 export enum LoginFormFields {
   Username = 'username',
@@ -41,7 +41,7 @@ export const useLoginForm = () => {
 export const useOnSubmit = () => {
   const [login, data] = useLoginMutation()
 
-  const { isLoading, error } = data
+  const { isSuccess, isLoading, error } = data
   const onSubmit = useCallback(
     (values: LoginFormValues) => {
       login({
@@ -57,6 +57,7 @@ export const useOnSubmit = () => {
   return {
     onSubmit,
     isLoading,
+    isSuccess,
     error,
   }
 }

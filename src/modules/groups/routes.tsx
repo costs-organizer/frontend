@@ -16,6 +16,18 @@ const routes: RouteObject[] = [
       },
     ],
   },
+  {
+    path: paths.group,
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <Loadable component={lazy(() => import('./views/GroupDetails'))} />
+        ),
+      },
+    ],
+  },
 ]
 
 export default routes

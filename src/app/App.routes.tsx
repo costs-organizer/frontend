@@ -1,4 +1,5 @@
-import { RouteObject, useRoutes } from 'react-router-dom'
+import { Navigate, RouteObject, useRoutes } from 'react-router-dom'
+import { paths } from 'config'
 import { Layout } from 'shared/components'
 import { routes as moduleRoutes } from '../modules'
 
@@ -7,7 +8,7 @@ const routes: RouteObject[] = [
   {
     path: '*',
     element: <Layout />,
-    children: [{ path: '*', element: <div>Hello</div> }],
+    children: [{ path: '*', element: <Navigate to={paths.login}></Navigate> }],
   },
 ]
 

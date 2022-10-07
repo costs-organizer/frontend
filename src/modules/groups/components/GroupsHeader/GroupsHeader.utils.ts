@@ -1,0 +1,15 @@
+import { useCallback, useState } from 'react'
+
+export const useHeaderModal = () => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const openModal = useCallback(() => {
+    setIsOpen(true)
+  }, [])
+
+  const closeModal = useCallback(() => {
+    setIsOpen(false)
+  }, [])
+
+  return { openModal, closeModal, isOpen }
+}
