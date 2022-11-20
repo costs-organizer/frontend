@@ -1,17 +1,23 @@
-import { useState, useCallback } from 'react'
+import { MouseEvent, useState, useCallback } from 'react'
+import {
+  TypedUseSelectorHook,
+  useDispatch as useBaseDispatch,
+  useSelector as useBaseSelector,
+} from 'react-redux'
+import { RootDispatch, RootState } from 'app'
 
 export const useModal = () => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
 
-  const handleOpen = useCallback(() => {
-    setIsOpen(true)
+  const handleOpen = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
   }, [])
 
   const handleClose = useCallback(() => {
-    setIsOpen(false)
+    setAnchorEl(null)
   }, [])
 
-  return { isOpen, handleClose, handleOpen }
+  return { isOpen: !!anchorEl, handleClose, handleOpen, anchorEl }
 }
 
 export const useHandleCloseModal = (
@@ -21,3 +27,6 @@ export const useHandleCloseModal = (
     if (!onClose) return
     return onClose({}, 'backdropClick')
   }, [onClose])
+
+export const useDispatch: () => RootDispatch = useBaseDispatch
+export const useSelector: TypedUseSelectorHook<RootState> = useBaseSelector

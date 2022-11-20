@@ -1,8 +1,13 @@
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import { ApolloError, useMutation } from '@apollo/client'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useLoginMutation } from 'generated/graphql'
+import { LoginMutation, LoginMutationVariables } from 'generated/graphql'
+import { loginMutation, meQuery } from 'graphql/auth'
+import { useSnackbar } from 'notistack'
 import { object, SchemaOf, string } from 'yup'
+import { paths } from 'config'
 
 export enum LoginFormFields {
   Username = 'username',
@@ -39,25 +44,41 @@ export const useLoginForm = () => {
 }
 
 export const useOnSubmit = () => {
-  const [login, data] = useLoginMutation()
+  const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
+  const [login, data] = useMutation<LoginMutation, LoginMutationVariables>(
+    loginMutation,
+    { refetchQueries: [{ query: meQuery }] }
+  )
 
-  const { isSuccess, isLoading, error } = data
+  const { loading } = data
+  const onCompleted = useCallback(() => {
+    navigate(paths.groups)
+  }, [navigate])
+  const onError = useCallback(
+    (error: ApolloError) => {
+      enqueueSnackbar(error.message)
+    },
+    [enqueueSnackbar]
+  )
   const onSubmit = useCallback(
     (values: LoginFormValues) => {
       login({
-        inp: {
-          name: values[LoginFormFields.Username],
-          password: values[LoginFormFields.Password],
+        onCompleted,
+        onError,
+        variables: {
+          inp: {
+            name: values[LoginFormFields.Username],
+            password: values[LoginFormFields.Password],
+          },
         },
       })
     },
-    [login]
+    [login, onCompleted, onError]
   )
 
   return {
     onSubmit,
-    isLoading,
-    isSuccess,
-    error,
+    loading,
   }
 }

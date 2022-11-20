@@ -5,6 +5,7 @@ export const getTranstactionsQuery = gql`
     transactions(findAllInput: $inp) {
       id
       moneyAmount
+      isCompleted
       receiver {
         id
         username

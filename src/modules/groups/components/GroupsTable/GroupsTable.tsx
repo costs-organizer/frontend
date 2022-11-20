@@ -1,17 +1,17 @@
+import { useQuery } from '@apollo/client'
 import { Button, Grid } from '@mui/material'
-import { useGetGroupsQuery } from 'generated/graphql'
+import { GetGroupsQuery, GetGroupsQueryVariables } from 'generated/graphql'
+import { getGroups } from 'graphql/groups'
 import { DataTable } from 'shared/components'
 import { useModal } from 'shared/utils'
 import CreateGroupModal from '../CreateGroupModal'
 import { useCoulumns, useGroupRedirect } from './GroupsTable.utils'
 
 const GroupsTable = () => {
-  const { isLoading, data, error } = useGetGroupsQuery(
-    {
-      inp: {},
-    },
-    {}
-  )
+  const { loading, data, error } = useQuery<
+    GetGroupsQuery,
+    GetGroupsQueryVariables
+  >(getGroups, { variables: { inp: {} } })
   const columns = useCoulumns()
   const { handleClose, handleOpen, isOpen } = useModal()
   const onRowClick = useGroupRedirect()
@@ -31,7 +31,7 @@ const GroupsTable = () => {
         onRowClick={onRowClick}
         columns={columns}
         data={data?.groups}
-        loading={isLoading}
+        loading={loading}
         error={error}
       />
     </>

@@ -6,7 +6,6 @@ export const useCurrentTab = () => {
     event: SyntheticEvent<Element, Event>,
     value: number
   ) => {
-    console.log(value)
     setCurrentTab(value)
   }
 

@@ -1,7 +1,12 @@
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
+import { useMutation } from '@apollo/client'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useCreateGroupMutation } from 'generated/graphql'
+import {
+  CreateGroupMutation,
+  CreateGroupMutationVariables,
+} from 'generated/graphql'
+import { createGroupMutation, getGroups } from 'graphql/groups'
 import { array, mixed, object, SchemaOf, string } from 'yup'
 import { Entity } from 'shared/types/data'
 
@@ -40,20 +45,30 @@ export const useNewGroupForm = () => {
 }
 
 export const useOnSubmit = () => {
-  const [createGroup, { isLoading, isSuccess, error, data }] =
-    useCreateGroupMutation()
+  const [createGroup, { loading, error, data, called }] = useMutation<
+    CreateGroupMutation,
+    CreateGroupMutationVariables
+  >(createGroupMutation)
 
   const onSubmit = useCallback(
     ({ members, name }: NewGroupValues) => {
-      createGroup({ inp: { name, userIds: members.map(({ id }) => id) } })
+      createGroup({
+        variables: { inp: { name, userIds: members.map(({ id }) => id) } },
+        refetchQueries: [
+          {
+            query: getGroups,
+            variables: {},
+          },
+        ],
+      })
     },
     [createGroup]
   )
 
   return {
     onSubmit,
-    isLoading,
-    isSuccess,
+    loading,
+    isSuccess: called,
     error,
     newGroupId: data?.createGroup,
   }

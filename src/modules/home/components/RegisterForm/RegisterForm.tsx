@@ -1,36 +1,51 @@
 import { FunctionComponent } from 'react'
 import { Grid } from '@mui/material'
 import { Form, LoadingButton, TextField } from 'shared/components'
+import { FormWrapper } from '../FormWrapper'
 import { RegisterFormFields, useRegisterForm } from './RegisterForm.utils'
 
 interface RegisterFormProps {}
 
 const RegisterForm: FunctionComponent<RegisterFormProps> = () => {
-  const { isLoading, error, ...formProps } = useRegisterForm()
-  console.log(isLoading, error)
+  const { loading, ...formProps } = useRegisterForm()
+
   return (
     <Form {...formProps}>
-      <Grid container>
-        <Grid item xs={7}>
-          <TextField
-            name={RegisterFormFields.Username}
-            placeholder="username"
-          />
-        </Grid>
-        <Grid item xs={7}>
-          <TextField name={RegisterFormFields.Email} placeholder="email" />
-        </Grid>
-        <Grid item xs={7}>
-          <TextField
-            name={RegisterFormFields.Password}
-            placeholder="password"
-          />
-        </Grid>
-        <Grid item xs={7}>
-          <LoadingButton loading={isLoading} variant="contained" type="submit">
-            Register!
-          </LoadingButton>
-        </Grid>
+      <Grid container justifyContent="center">
+        <FormWrapper item container xs={4} justifyContent="center">
+          <Grid item xs={12}>
+            <TextField
+              name={RegisterFormFields.Username}
+              placeholder="username"
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name={RegisterFormFields.Email}
+              placeholder="email"
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name={RegisterFormFields.Password}
+              placeholder="password"
+              fullWidth
+              type="password"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <LoadingButton
+              loading={loading}
+              variant="contained"
+              type="submit"
+              fullWidth
+            >
+              Register!
+            </LoadingButton>
+          </Grid>
+        </FormWrapper>
       </Grid>
     </Form>
   )

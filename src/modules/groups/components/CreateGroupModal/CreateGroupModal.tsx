@@ -19,7 +19,7 @@ import UsersSelectChips from '../UsersSelectChips'
 import { NewGroupFields, useNewGroupForm } from './CreateGroupModal.utils'
 
 const CreateGroupModal = (props: DialogProps) => {
-  const { isLoading, isSuccess, newGroupId, ...formProps } = useNewGroupForm()
+  const { loading, isSuccess, newGroupId, ...formProps } = useNewGroupForm()
 
   const handleClose = () => {
     if (!props.onClose) return
@@ -47,7 +47,7 @@ const CreateGroupModal = (props: DialogProps) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <LoadingButton type="submit" loading={isLoading} variant="contained">
+          <LoadingButton type="submit" loading={loading} variant="contained">
             Create
           </LoadingButton>
         </DialogActions>

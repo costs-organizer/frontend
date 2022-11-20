@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { Grid, Chip } from '@mui/material'
 import { AutocompleteField } from 'shared/components'
@@ -6,14 +7,24 @@ import { useUsersOptions } from './UsersSelectChips.utils'
 
 interface UsersSelectChipsProps {
   fieldName: string
+  defaultOptions?: Entity[]
+  excludeMe?: boolean
 }
 
-const UsersSelectChips = ({ fieldName }: UsersSelectChipsProps) => {
+const UsersSelectChips = ({
+  fieldName,
+  defaultOptions,
+}: UsersSelectChipsProps) => {
   const { setValue } = useFormContext()
   const users = useWatch({ name: fieldName }) as Entity[] | null | undefined
 
   const { areUserOptionsLoading, handleInputChange, options } =
     useUsersOptions()
+
+  const inputOptions = useMemo(
+    () => defaultOptions || options,
+    [options, defaultOptions]
+  )
 
   return (
     <>
@@ -22,7 +33,7 @@ const UsersSelectChips = ({ fieldName }: UsersSelectChipsProps) => {
           optionsLoading={areUserOptionsLoading}
           name={fieldName}
           label="Members"
-          options={options}
+          options={inputOptions}
           onInputChange={handleInputChange}
           multiple
         />

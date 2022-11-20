@@ -1,34 +1,52 @@
-import { FunctionComponent, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Grid } from '@mui/material'
+import { FunctionComponent } from 'react'
+import { Grid, Typography } from '@mui/material'
 import { paths } from 'config'
 import { Form, LoadingButton, TextField } from 'shared/components'
+import { FormWrapper } from '../FormWrapper'
+import { SignUpLink } from './LoginForm.styles'
 import { LoginFormFields, useLoginForm } from './LoginForm.utils'
 
 interface LoginFormProps {}
 
 const LoginForm: FunctionComponent<LoginFormProps> = () => {
-  const { isSuccess, isLoading, error, ...formProps } = useLoginForm()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (isSuccess) navigate(paths.groups)
-  }, [isSuccess, navigate])
+  const { loading, ...formProps } = useLoginForm()
 
   return (
     <Form {...formProps}>
-      <Grid container>
-        <Grid item xs={7}>
-          <TextField name={LoginFormFields.Username} placeholder="username" />
-        </Grid>
-        <Grid item xs={7}>
-          <TextField name={LoginFormFields.Password} placeholder="password" />
-        </Grid>
-        <Grid item xs={7}>
-          <LoadingButton loading={isLoading} variant="contained" type="submit">
-            Login!
-          </LoadingButton>
-        </Grid>
+      <Grid container justifyContent="center">
+        <FormWrapper item container xs={4} justifyContent="center">
+          <Grid item xs={12}>
+            <TextField
+              name={LoginFormFields.Username}
+              placeholder="username"
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name={LoginFormFields.Password}
+              placeholder="password"
+              fullWidth
+              type="password"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <LoadingButton
+              loading={loading}
+              variant="contained"
+              type="submit"
+              fullWidth
+            >
+              Login!
+            </LoadingButton>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography align="center">
+              Not registered yet?&nbsp;
+              <SignUpLink to={paths.register}>Sign In</SignUpLink>
+            </Typography>
+          </Grid>
+        </FormWrapper>
       </Grid>
     </Form>
   )

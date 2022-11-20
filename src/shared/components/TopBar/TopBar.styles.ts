@@ -5,7 +5,7 @@ export const LogoLink = styled(Link)(({ theme }) => ({
   '& , &:visited': {
     display: 'flex',
     marginRight: theme.spacing(19),
-    color: 'white',
+    color: theme.palette.common.white,
   },
   textDecoration: 'none',
 
@@ -16,6 +16,10 @@ export const LogoLink = styled(Link)(({ theme }) => ({
 
 export const UserMenuContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 5.5),
+  '& button': {
+    marginRight: theme.spacing(5),
+    // background: 'red',
+  },
 }))
 
 export const Toolbar = styled(BaseToolbar)({

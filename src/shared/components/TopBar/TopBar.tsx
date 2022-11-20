@@ -1,13 +1,16 @@
+import { useQuery } from '@apollo/client'
 import { HandshakeOutlined } from '@mui/icons-material'
 import { AppBar, Typography } from '@mui/material'
-import { useMeQuery } from 'generated/graphql'
+import { MeQuery, MeQueryVariables } from 'generated/graphql'
+import { meQuery } from 'graphql/auth'
 import { paths } from 'config'
+import NotificationsDropdown from './NotificationsDropdown'
 import UserMenu from './UserMenu'
 import { LogoLink, Toolbar, UserMenuContainer } from './TopBar.styles'
 import './TopBar.utils'
 
 const TopBar = () => {
-  const { data, isLoading, isSuccess } = useMeQuery()
+  const { data, loading } = useQuery<MeQuery, MeQueryVariables>(meQuery)
   return (
     <AppBar>
       <Toolbar>
@@ -15,9 +18,10 @@ const TopBar = () => {
           <HandshakeOutlined fontSize="large" />
           <Typography variant="h6">Debts Setler</Typography>
         </LogoLink>
-        {isSuccess && (
+        {!!data && (
           <UserMenuContainer>
-            <UserMenu name={data?.me.username} isLoading={isLoading} />
+            <NotificationsDropdown />
+            <UserMenu name={data?.me.username} isLoading={loading} />
           </UserMenuContainer>
         )}
       </Toolbar>

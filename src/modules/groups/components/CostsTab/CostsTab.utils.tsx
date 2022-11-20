@@ -1,19 +1,30 @@
 import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { GetCostsQuery, useGetCostsQuery } from 'generated/graphql'
+import { useQuery } from '@apollo/client'
+import {
+  GetCostsQuery,
+  GetCostsQueryVariables,
+  MeQuery,
+} from 'generated/graphql'
+import { meQuery } from 'graphql/auth'
+import { getCostsQuery } from 'graphql/costs'
 import { Column } from 'shared/components'
 import { ArrayElement } from 'shared/utils'
+import JoinCostButton from '../JoinCostButton'
 
 export type CostType = ArrayElement<GetCostsQuery['costs']>
 
 export const useCostsTable = () => {
+  const { data: userData } = useQuery<MeQuery>(meQuery)
   const [showOnlyMy, setShowOnlyMy] = useState(true)
   const { groupId } = useParams()
-  const { data, isLoading, refetch } = useGetCostsQuery(
+  const { data, loading } = useQuery<GetCostsQuery, GetCostsQueryVariables>(
+    getCostsQuery,
     {
-      inp: { groupId: Number(groupId), filterByName: showOnlyMy },
-    },
-    { refetchOnMountOrArgChange: true }
+      variables: {
+        inp: { groupId: Number(groupId), filterByName: showOnlyMy },
+      },
+    }
   )
 
   const columns: Column<CostType>[] = useMemo(
@@ -27,7 +38,7 @@ export const useCostsTable = () => {
         renderValue: (row: CostType) => row.description,
       },
       {
-        label: 'debtor',
+        label: 'amount',
         renderValue: (row: CostType) => `${row.moneyAmount} PLN`,
       },
       {
@@ -39,15 +50,21 @@ export const useCostsTable = () => {
         renderValue: (row: CostType) =>
           row.participants.map(({ username }) => username).join(', '),
       },
+      {
+        label: 'actions',
+        renderValue: (row: CostType) =>
+          row.participants.some(({ id }) => id === userData?.me.id) ? null : (
+            <JoinCostButton costId={row.id} />
+          ),
+      },
     ],
-    []
+    [userData?.me.id]
   )
 
   return {
     columns,
-    isLoading,
+    loading,
     setShowOnlyMy,
-    refetch,
     showOnlyMy,
     costs: data?.costs,
   }

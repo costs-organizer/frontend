@@ -7,22 +7,17 @@ import { useCostsTable } from './CostsTab.utils'
 interface CostsTabProps {}
 
 const CostsTab = (props: CostsTabProps) => {
-  const { columns, costs, isLoading, setShowOnlyMy, showOnlyMy, refetch } =
-    useCostsTable()
+  const { columns, costs, loading, setShowOnlyMy, showOnlyMy } = useCostsTable()
   const { handleClose, handleOpen, isOpen } = useModal()
 
   return (
     <>
-      <NewCostModal
-        open={isOpen}
-        onClose={handleClose}
-        refetchCosts={refetch}
-      />
+      <NewCostModal open={isOpen} onClose={handleClose} />
       <Grid container>
         <Grid item container justifyContent="space-between" xs={12}>
           <Grid item>
             <FormControlLabel
-              disabled={isLoading}
+              disabled={loading}
               onChange={(_, isChecked) => setShowOnlyMy(isChecked)}
               value={showOnlyMy}
               control={<Checkbox defaultChecked />}
@@ -36,7 +31,7 @@ const CostsTab = (props: CostsTabProps) => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <DataTable data={costs} columns={columns} loading={isLoading} />
+          <DataTable data={costs} columns={columns} loading={loading} />
         </Grid>
       </Grid>
     </>

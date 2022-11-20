@@ -24,11 +24,12 @@ const MembersDropdown = ({ members, owner }: MembersDropdownProps) => {
   return (
     <>
       <Button onClick={handleClick}>
-        <People fontSize="large" />{' '}
+        <People fontSize="large" />
+        &nbsp;
         <Typography variant="subtitle1">Members</Typography>
       </Button>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        {members.map((member, index) => (
+        {members?.map((member, index) => (
           <StyledMenuItem key={`member-item-${index}`}>
             {member.username} {owner?.id === member.id && <Psychology />}
           </StyledMenuItem>

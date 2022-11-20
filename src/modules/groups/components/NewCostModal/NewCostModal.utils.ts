@@ -1,8 +1,13 @@
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { useMutation } from '@apollo/client'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useCreateCostMutation } from 'generated/graphql'
+import {
+  CreateCostMutation,
+  CreateCostMutationVariables,
+} from 'generated/graphql'
+import { createCostMutation, getCostsQuery } from 'graphql/costs'
 import { array, boolean, mixed, number, object, SchemaOf, string } from 'yup'
 import { Entity } from 'shared/types'
 
@@ -53,19 +58,32 @@ export const useNewCostForm = () => {
 
 export const useOnSubmit = () => {
   const { groupId } = useParams()
-  const [createCost, { isLoading, isSuccess, error, reset }] =
-    useCreateCostMutation()
+  const [createCost, { loading, error, reset }] = useMutation<
+    CreateCostMutation,
+    CreateCostMutationVariables
+  >(createCostMutation, {
+    refetchQueries: [
+      {
+        query: getCostsQuery,
+        variables: {
+          inp: { groupId: Number(groupId) },
+        },
+      },
+    ],
+  })
 
   const onSubmit = useCallback(
     (values: NewCostFormValues) => {
       if (!groupId || !values.moneyAmount) return
       createCost({
-        inp: {
-          groupId: parseInt(groupId),
-          description: values[NewCostFormFields.Description],
-          moneyAmount: values.moneyAmount,
-          name: values[NewCostFormFields.Name],
-          participantsIds: values.participants.map(({ id }) => id),
+        variables: {
+          inp: {
+            groupId: parseInt(groupId),
+            description: values[NewCostFormFields.Description],
+            moneyAmount: values.moneyAmount,
+            name: values[NewCostFormFields.Name],
+            participantsIds: values.participants.map(({ id }) => id),
+          },
         },
       })
     },
@@ -73,8 +91,7 @@ export const useOnSubmit = () => {
   )
 
   return {
-    isLoading,
-    isSuccess,
+    loading,
     error,
     resetSubmit: reset,
     onSubmit,

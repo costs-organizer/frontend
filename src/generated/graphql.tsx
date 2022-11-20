@@ -1,5 +1,3 @@
-import { api } from '../app/api/baseApi'
-
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -36,7 +34,6 @@ export type Cost = {
   group: Array<Group>
   groupId: Scalars['Float']
   id: Scalars['Int']
-  isCompleted: Scalars['Boolean']
   moneyAmount: Scalars['Float']
   name: Scalars['String']
   participants: Array<User>
@@ -104,10 +101,12 @@ export type Mutation = {
   joinCost: Scalars['Int']
   login: Scalars['String']
   logout: Scalars['String']
+  markAsRead: Array<Scalars['Int']>
   register: User
   removeCost: Scalars['Int']
   removeUser: User
   removeUserFromGroup: Scalars['Int']
+  sendReminder: Scalars['Int']
 }
 
 export type MutationAddNewUsersArgs = {
@@ -134,6 +133,10 @@ export type MutationLoginArgs = {
   loginInput: LoginInput
 }
 
+export type MutationMarkAsReadArgs = {
+  notificationIds: Array<Scalars['Int']>
+}
+
 export type MutationRegisterArgs = {
   registerInput: RegisterInput
 }
@@ -150,17 +153,21 @@ export type MutationRemoveUserFromGroupArgs = {
   removeUserFromGroupInput: RemoveUserFromGroupInput
 }
 
+export type MutationSendReminderArgs = {
+  transactionId: Scalars['Int']
+}
+
 export type Notification = {
   __typename?: 'Notification'
   createdAt?: Maybe<Scalars['DateTime']>
   createdBy: User
   createdById: Scalars['Int']
-  decription: Scalars['String']
   deletedAt?: Maybe<Scalars['DateTime']>
+  description?: Maybe<Scalars['String']>
   group: Group
   groupId: Scalars['Int']
   id: Scalars['Int']
-  isCompleted: Scalars['Boolean']
+  readBy: Array<Scalars['Int']>
   receivers: Array<User>
   type: NotificationType
   updatedAt?: Maybe<Scalars['DateTime']>
@@ -176,9 +183,11 @@ export type Query = {
   __typename?: 'Query'
   cost: Cost
   costs: Array<Cost>
+  findOne: Notification
   group: Group
   groups: Array<Group>
   me: User
+  notifications: Array<Notification>
   transaction: Transaction
   transactions: Array<Transaction>
   user: User
@@ -191,6 +200,10 @@ export type QueryCostArgs = {
 
 export type QueryCostsArgs = {
   findAllInput: FindAllCostsInput
+}
+
+export type QueryFindOneArgs = {
+  notificationId: Scalars['Int']
 }
 
 export type QueryGroupArgs = {
@@ -228,6 +241,12 @@ export type RemoveUserFromGroupInput = {
   userId: Scalars['Int']
 }
 
+export type Subscription = {
+  __typename?: 'Subscription'
+  reminderSent: Notification
+  transactionCompleted: Notification
+}
+
 export type Transaction = {
   __typename?: 'Transaction'
   createdAt?: Maybe<Scalars['DateTime']>
@@ -235,6 +254,7 @@ export type Transaction = {
   group: Group
   groupId: Scalars['Float']
   id: Scalars['Int']
+  isCompleted?: Maybe<Scalars['Boolean']>
   moneyAmount: Scalars['Float']
   payer: User
   payerId: Scalars['Float']
@@ -375,7 +395,7 @@ export type GetGroupsQuery = {
     notifications: Array<{
       __typename?: 'Notification'
       id: number
-      decription: string
+      description?: string | null
       type: NotificationType
     }>
   }>
@@ -417,6 +437,56 @@ export type RemoveUserFromGroupMutation = {
   removeUserFromGroup: number
 }
 
+export type GetUserNotificationsQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetUserNotificationsQuery = {
+  __typename?: 'Query'
+  notifications: Array<{
+    __typename?: 'Notification'
+    id: number
+    type: NotificationType
+    readBy: Array<number>
+    group: { __typename?: 'Group'; id: number; name: string }
+    receivers: Array<{ __typename?: 'User'; id: number; username: string }>
+    createdBy: { __typename?: 'User'; id: number; username: string }
+  }>
+}
+
+export type ReadNotificationsMutationVariables = Exact<{
+  notificationsIds: Array<Scalars['Int']> | Scalars['Int']
+}>
+
+export type ReadNotificationsMutation = {
+  __typename?: 'Mutation'
+  markAsRead: Array<number>
+}
+
+export type ReminderNotificationSubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type ReminderNotificationSubscription = {
+  __typename?: 'Subscription'
+  reminderSent: {
+    __typename?: 'Notification'
+    id: number
+    type: NotificationType
+    readBy: Array<number>
+    group: { __typename?: 'Group'; id: number; name: string }
+    receivers: Array<{ __typename?: 'User'; id: number; username: string }>
+    createdBy: { __typename?: 'User'; id: number; username: string }
+  }
+}
+
+export type SendReminderMutationVariables = Exact<{
+  transactionId: Scalars['Int']
+}>
+
+export type SendReminderMutation = {
+  __typename?: 'Mutation'
+  sendReminder: number
+}
+
 export type CompleteTransactionMutationVariables = Exact<{
   inp: Scalars['Int']
 }>
@@ -451,6 +521,7 @@ export type GetTransactionsQuery = {
     __typename?: 'Transaction'
     id: number
     moneyAmount: number
+    isCompleted?: boolean | null
     receiver: { __typename?: 'User'; id: number; username: string }
     payer: { __typename?: 'User'; id: number; username: string }
   }>
@@ -469,315 +540,3 @@ export type GetUsersQuery = {
     email: string
   }>
 }
-
-export const LoginDocument = `
-    mutation Login($inp: LoginInput!) {
-  login(loginInput: $inp)
-}
-    `
-export const LogoutDocument = `
-    mutation Logout {
-  logout
-}
-    `
-export const MeDocument = `
-    query Me {
-  me {
-    id
-    username
-  }
-}
-    `
-export const RegisterDocument = `
-    mutation Register($inp: RegisterInput!) {
-  register(registerInput: $inp) {
-    id
-  }
-}
-    `
-export const CreateCostDocument = `
-    mutation CreateCost($inp: CreateCostInput!) {
-  createCost(createCostInput: $inp)
-}
-    `
-export const GetCostDocument = `
-    query GetCost($inp: Int!) {
-  cost(id: $inp) {
-    id
-    name
-    description
-    moneyAmount
-    participants {
-      id
-      username
-    }
-    createdBy {
-      id
-      username
-    }
-  }
-}
-    `
-export const GetCostsDocument = `
-    query GetCosts($inp: FindAllCostsInput!) {
-  costs(findAllInput: $inp) {
-    id
-    name
-    description
-    moneyAmount
-    participants {
-      id
-      username
-    }
-    createdBy {
-      id
-      username
-    }
-  }
-}
-    `
-export const JoinCostDocument = `
-    mutation JoinCost($inp: Int!) {
-  joinCost(costId: $inp)
-}
-    `
-export const RemoveCostDocument = `
-    mutation RemoveCost($inp: Int!) {
-  removeCost(costId: $inp)
-}
-    `
-export const AddUserToGroupDocument = `
-    mutation AddUserToGroup($inp: AddNewUsersInput!) {
-  addNewUsers(addNewUsersInput: $inp)
-}
-    `
-export const CreateGroupDocument = `
-    mutation CreateGroup($inp: CreateGroupInput!) {
-  createGroup(createGroupInput: $inp)
-}
-    `
-export const GetGroupsDocument = `
-    query GetGroups($inp: FindAllGroupsInput!) {
-  groups(findAllInput: $inp) {
-    id
-    createdAt
-    createdBy {
-      id
-      username
-    }
-    name
-    members {
-      id
-    }
-    notifications {
-      id
-      decription
-      type
-    }
-  }
-}
-    `
-export const GetGroupDocument = `
-    query GetGroup($inp: Int!) {
-  group(id: $inp) {
-    id
-    createdAt
-    name
-    createdBy {
-      id
-      username
-    }
-    members {
-      id
-      username
-    }
-    costs {
-      id
-      createdAt
-      updatedAt
-      name
-      moneyAmount
-      description
-      createdBy {
-        id
-        username
-      }
-      participants {
-        id
-        username
-      }
-    }
-  }
-}
-    `
-export const RemoveUserFromGroupDocument = `
-    mutation RemoveUserFromGroup($inp: RemoveUserFromGroupInput!) {
-  removeUserFromGroup(removeUserFromGroupInput: $inp)
-}
-    `
-export const CompleteTransactionDocument = `
-    mutation CompleteTransaction($inp: Int!) {
-  completeTransaction(transactionId: $inp)
-}
-    `
-export const GetSingleTransactionDocument = `
-    query GetSingleTransaction($inp: Int!) {
-  transaction(transactionId: $inp) {
-    id
-    moneyAmount
-    receiver {
-      id
-      username
-    }
-    payer {
-      id
-      username
-    }
-  }
-}
-    `
-export const GetTransactionsDocument = `
-    query GetTransactions($inp: FindAllTransactionsInput!) {
-  transactions(findAllInput: $inp) {
-    id
-    moneyAmount
-    receiver {
-      id
-      username
-    }
-    payer {
-      id
-      username
-    }
-  }
-}
-    `
-export const GetUsersDocument = `
-    query GetUsers($inp: FindAllUsersInput!) {
-  users(findAllInput: $inp) {
-    id
-    username
-    email
-  }
-}
-    `
-
-const injectedRtkApi = api.injectEndpoints({
-  endpoints: build => ({
-    Login: build.mutation<LoginMutation, LoginMutationVariables>({
-      query: variables => ({ document: LoginDocument, variables }),
-    }),
-    Logout: build.mutation<LogoutMutation, LogoutMutationVariables | void>({
-      query: variables => ({ document: LogoutDocument, variables }),
-    }),
-    Me: build.query<MeQuery, MeQueryVariables | void>({
-      query: variables => ({ document: MeDocument, variables }),
-    }),
-    Register: build.mutation<RegisterMutation, RegisterMutationVariables>({
-      query: variables => ({ document: RegisterDocument, variables }),
-    }),
-    CreateCost: build.mutation<CreateCostMutation, CreateCostMutationVariables>(
-      {
-        query: variables => ({ document: CreateCostDocument, variables }),
-      }
-    ),
-    GetCost: build.query<GetCostQuery, GetCostQueryVariables>({
-      query: variables => ({ document: GetCostDocument, variables }),
-    }),
-    GetCosts: build.query<GetCostsQuery, GetCostsQueryVariables>({
-      query: variables => ({ document: GetCostsDocument, variables }),
-    }),
-    JoinCost: build.mutation<JoinCostMutation, JoinCostMutationVariables>({
-      query: variables => ({ document: JoinCostDocument, variables }),
-    }),
-    RemoveCost: build.mutation<RemoveCostMutation, RemoveCostMutationVariables>(
-      {
-        query: variables => ({ document: RemoveCostDocument, variables }),
-      }
-    ),
-    AddUserToGroup: build.mutation<
-      AddUserToGroupMutation,
-      AddUserToGroupMutationVariables
-    >({
-      query: variables => ({ document: AddUserToGroupDocument, variables }),
-    }),
-    CreateGroup: build.mutation<
-      CreateGroupMutation,
-      CreateGroupMutationVariables
-    >({
-      query: variables => ({ document: CreateGroupDocument, variables }),
-    }),
-    GetGroups: build.query<GetGroupsQuery, GetGroupsQueryVariables>({
-      query: variables => ({ document: GetGroupsDocument, variables }),
-    }),
-    GetGroup: build.query<GetGroupQuery, GetGroupQueryVariables>({
-      query: variables => ({ document: GetGroupDocument, variables }),
-    }),
-    RemoveUserFromGroup: build.mutation<
-      RemoveUserFromGroupMutation,
-      RemoveUserFromGroupMutationVariables
-    >({
-      query: variables => ({
-        document: RemoveUserFromGroupDocument,
-        variables,
-      }),
-    }),
-    CompleteTransaction: build.mutation<
-      CompleteTransactionMutation,
-      CompleteTransactionMutationVariables
-    >({
-      query: variables => ({
-        document: CompleteTransactionDocument,
-        variables,
-      }),
-    }),
-    GetSingleTransaction: build.query<
-      GetSingleTransactionQuery,
-      GetSingleTransactionQueryVariables
-    >({
-      query: variables => ({
-        document: GetSingleTransactionDocument,
-        variables,
-      }),
-    }),
-    GetTransactions: build.query<
-      GetTransactionsQuery,
-      GetTransactionsQueryVariables
-    >({
-      query: variables => ({ document: GetTransactionsDocument, variables }),
-    }),
-    GetUsers: build.query<GetUsersQuery, GetUsersQueryVariables>({
-      query: variables => ({ document: GetUsersDocument, variables }),
-    }),
-  }),
-})
-
-export { injectedRtkApi as api }
-export const {
-  useLoginMutation,
-  useLogoutMutation,
-  useMeQuery,
-  useLazyMeQuery,
-  useRegisterMutation,
-  useCreateCostMutation,
-  useGetCostQuery,
-  useLazyGetCostQuery,
-  useGetCostsQuery,
-  useLazyGetCostsQuery,
-  useJoinCostMutation,
-  useRemoveCostMutation,
-  useAddUserToGroupMutation,
-  useCreateGroupMutation,
-  useGetGroupsQuery,
-  useLazyGetGroupsQuery,
-  useGetGroupQuery,
-  useLazyGetGroupQuery,
-  useRemoveUserFromGroupMutation,
-  useCompleteTransactionMutation,
-  useGetSingleTransactionQuery,
-  useLazyGetSingleTransactionQuery,
-  useGetTransactionsQuery,
-  useLazyGetTransactionsQuery,
-  useGetUsersQuery,
-  useLazyGetUsersQuery,
-} = injectedRtkApi

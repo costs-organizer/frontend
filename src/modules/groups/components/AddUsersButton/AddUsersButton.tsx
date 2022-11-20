@@ -1,5 +1,7 @@
+import { useQuery } from '@apollo/client'
 import { Button } from '@mui/material'
-import { useMeQuery } from 'generated/graphql'
+import { MeQuery, MeQueryVariables } from 'generated/graphql'
+import { meQuery } from 'graphql/auth'
 import { Entity } from 'shared/types/data'
 import { useModal } from 'shared/utils'
 import AddUsersModal from './AddUsersModal'
@@ -9,7 +11,7 @@ interface AddUsersButtonProps {
 }
 
 const AddUsersButton = ({ createdBy }: AddUsersButtonProps) => {
-  const { data } = useMeQuery()
+  const { data } = useQuery<MeQuery, MeQueryVariables>(meQuery)
   const { handleClose, handleOpen, isOpen } = useModal()
   if (createdBy?.id !== data?.me.id) return null
 

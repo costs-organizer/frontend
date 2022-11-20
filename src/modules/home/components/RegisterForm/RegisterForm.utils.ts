@@ -1,8 +1,13 @@
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import { ApolloError, useMutation } from '@apollo/client'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useRegisterMutation } from 'generated/graphql'
+import { RegisterMutation, RegisterMutationVariables } from 'generated/graphql'
+import { registerMutation } from 'graphql/auth'
+import { useSnackbar } from 'notistack'
 import { object, SchemaOf, string } from 'yup'
+import { paths } from 'config'
 
 const DEFAULT_LENGTH = 8
 
@@ -45,26 +50,44 @@ export const useRegisterForm = () => {
 }
 
 export const useOnSubmit = () => {
-  const [register, data] = useRegisterMutation()
+  const navigate = useNavigate()
+  const { enqueueSnackbar } = useSnackbar()
+  const [register, data] = useMutation<
+    RegisterMutation,
+    RegisterMutationVariables
+  >(registerMutation)
 
-  const { error, isLoading } = data
+  const { loading } = data
+
+  const onCompleted = useCallback(() => {
+    navigate(paths.login)
+  }, [navigate])
+  const onError = useCallback(
+    (error: ApolloError) => {
+      enqueueSnackbar(error.message)
+    },
+    [enqueueSnackbar]
+  )
 
   const onSubmit = useCallback(
     (values: RegisterFormValues) => {
       register({
-        inp: {
-          email: values.email,
-          name: values.username,
-          password: values.password,
+        onError,
+        onCompleted,
+        variables: {
+          inp: {
+            email: values.email,
+            name: values.username,
+            password: values.password,
+          },
         },
       })
     },
-    [register]
+    [onCompleted, onError, register]
   )
 
   return {
     onSubmit,
-    error,
-    isLoading,
+    loading,
   }
 }

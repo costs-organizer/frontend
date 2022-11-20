@@ -1,17 +1,27 @@
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import { useQuery } from '@apollo/client'
 import { Grid, Typography } from '@mui/material'
-import { useGetGroupQuery } from 'generated/graphql'
+import { GetGroupQuery, GetGroupQueryVariables } from 'generated/graphql'
+import { getSingleGroupQuery } from 'graphql/groups/getSingleGroup'
 import { Loader, Tabs } from 'shared/components'
-import { AddUsersButton, CostsTab, UsersDropdown } from '../components'
+import {
+  AddUsersButton,
+  CostsTab,
+  TransactionsTab,
+  UsersDropdown,
+} from '../components'
 
 const GroupDetails = () => {
   const { groupId } = useParams<{ groupId: string }>()
-  const { data, isLoading } = useGetGroupQuery({ inp: Number(groupId) })
+  const { data, loading } = useQuery<GetGroupQuery, GetGroupQueryVariables>(
+    getSingleGroupQuery,
+    { variables: { inp: Number(groupId) } }
+  )
   const labels = ['Costs', 'Transactions']
   const panels = [
     <CostsTab key="costs-tab" />,
-    <div key="xdd">Transactions</div>,
+    <TransactionsTab key="translations-tab" />,
   ]
 
   const groupCreator = useMemo(
@@ -21,7 +31,7 @@ const GroupDetails = () => {
     }),
     [data?.group.createdBy.id, data?.group.createdBy.username]
   )
-  if (isLoading) return <Loader />
+  if (loading) return <Loader />
 
   return (
     <Grid container>

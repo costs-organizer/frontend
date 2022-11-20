@@ -15,7 +15,7 @@ interface AddUsersModalProps extends DialogProps {}
 const AddUsersModal = (dialogProps: AddUsersModalProps) => {
   const handleClose = useHandleCloseModal(dialogProps.onClose)
 
-  const { isLoading, ...formProps } = useAddMembersForm(handleClose)
+  const { loading, ...formProps } = useAddMembersForm(handleClose)
 
   return (
     <Dialog {...dialogProps}>
@@ -26,7 +26,7 @@ const AddUsersModal = (dialogProps: AddUsersModalProps) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <LoadingButton loading={isLoading} type="submit" variant="contained">
+          <LoadingButton loading={loading} type="submit" variant="contained">
             Submit
           </LoadingButton>
         </DialogActions>

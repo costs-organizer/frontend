@@ -1,10 +1,10 @@
 import { Components } from '@mui/material'
+import MuiBadge from './MuiBadge'
 import MuiButton from './MuiButton'
 import MuiCard from './MuiCard'
 import MuiCssBaseline from './MuiCssBaseline'
 import MuiPaper from './MuiPaper'
 import MuiToolbar from './MuiToolbar'
-import MuiUserMenu from './MuiUserMenu'
 
 const components: Components = {
   MuiCssBaseline,
@@ -12,6 +12,7 @@ const components: Components = {
   MuiPaper,
   MuiCard,
   MuiToolbar,
+  MuiBadge,
   // <-- components-end -->
 }
 

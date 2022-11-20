@@ -2,8 +2,13 @@ import { useEffect } from 'react'
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { useMutation } from '@apollo/client'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useAddUserToGroupMutation } from 'generated/graphql'
+import {
+  AddUserToGroupMutation,
+  AddUserToGroupMutationVariables,
+} from 'generated/graphql'
+import { addUserToGroupMutation } from 'graphql/groups'
 import { array, mixed, object, SchemaOf } from 'yup'
 import { Entity } from 'shared/types'
 
@@ -39,30 +44,26 @@ export const useAddMembersForm = (handleClose: () => void) => {
 
 export const useOnSubmit = (handleClose: () => void) => {
   const { groupId } = useParams()
-  const [addMembersToGroup, { isLoading, isSuccess, error, reset }] =
-    useAddUserToGroupMutation()
-
-  useEffect(() => {
-    if (!isSuccess) return
-    reset()
-    handleClose()
-
-    return () => {
-      reset()
-    }
-  }, [handleClose, isSuccess, reset])
+  const [addMembersToGroup, { loading, error }] = useMutation<
+    AddUserToGroupMutation,
+    AddUserToGroupMutationVariables
+  >(addUserToGroupMutation, {
+    onCompleted: handleClose,
+  })
 
   const onSubmit = useCallback(
     (values: AddMembersFormValues) => {
       addMembersToGroup({
-        inp: {
-          groupId: Number(groupId),
-          userIds: values[AddMembersFormFields.Users].map(({ id }) => id),
+        variables: {
+          inp: {
+            groupId: Number(groupId),
+            userIds: values[AddMembersFormFields.Users].map(({ id }) => id),
+          },
         },
       })
     },
     [addMembersToGroup, groupId]
   )
 
-  return { onSubmit, isLoading, error }
+  return { onSubmit, loading, error }
 }

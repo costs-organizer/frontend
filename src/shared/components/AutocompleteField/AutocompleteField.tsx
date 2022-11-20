@@ -34,7 +34,6 @@ const AutocompleteField = (props: AutocompleteFieldProps) => {
   const getOptionSelected = (option: Entity, value: Entity) =>
     String(option.id) === String(value.id)
 
-  console.log('value:', value)
   return (
     <Autocomplete
       multiple={props.multiple}

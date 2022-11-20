@@ -15,7 +15,7 @@ export const getGroups = gql`
       }
       notifications {
         id
-        decription
+        description
         type
       }
     }
