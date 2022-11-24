@@ -14,3 +14,8 @@ export const getCombinedNotifications = (
     )
     return [...filteredReceivedNotifications, ...notifications]
   })
+
+export const getUnreadCount = (initialUnreadCount = 0) =>
+  createSelector(getReceivedNotifications, receivedNotifications => {
+    return receivedNotifications.length + initialUnreadCount
+  })

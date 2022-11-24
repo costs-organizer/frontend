@@ -1,6 +1,7 @@
 import { Button, Checkbox, FormControlLabel, Grid } from '@mui/material'
 import { DataTable } from 'shared/components'
 import { useModal } from 'shared/utils'
+import { CostsTabProvider } from '../../utils'
 import NewCostModal from '../NewCostModal'
 import { useCostsTable } from './CostsTab.utils'
 
@@ -9,9 +10,9 @@ interface CostsTabProps {}
 const CostsTab = (props: CostsTabProps) => {
   const { columns, costs, loading, setShowOnlyMy, showOnlyMy } = useCostsTable()
   const { handleClose, handleOpen, isOpen } = useModal()
-
+  console.log(loading)
   return (
-    <>
+    <CostsTabProvider showOnlyMy={showOnlyMy}>
       <NewCostModal open={isOpen} onClose={handleClose} />
       <Grid container>
         <Grid item container justifyContent="space-between" xs={12}>
@@ -34,7 +35,7 @@ const CostsTab = (props: CostsTabProps) => {
           <DataTable data={costs} columns={columns} loading={loading} />
         </Grid>
       </Grid>
-    </>
+    </CostsTabProvider>
   )
 }
 

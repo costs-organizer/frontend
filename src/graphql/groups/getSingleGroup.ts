@@ -13,6 +13,9 @@ export const getSingleGroupQuery = gql`
       members {
         id
         username
+        participatedCosts {
+          id
+        }
       }
       costs {
         id

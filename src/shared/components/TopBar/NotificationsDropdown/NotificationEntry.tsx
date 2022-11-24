@@ -3,23 +3,14 @@ import GroupSettledNotification from './GroupSettledNotification'
 import ReminderSentNotification from './ReminderSentNotification'
 import { NotificationEntryProps } from './types'
 
-const NotificationEntry = ({
-  notification,
-  userId,
-}: NotificationEntryProps) => {
-  switch (notification.type) {
+const NotificationEntry = (props: NotificationEntryProps) => {
+  switch (props.notification.type) {
     case NotificationType.GroupSettled:
-      return (
-        <GroupSettledNotification notification={notification} userId={userId} />
-      )
+      return <GroupSettledNotification {...props} />
     case NotificationType.Reminder:
-      return (
-        <ReminderSentNotification notification={notification} userId={userId} />
-      )
+      return <ReminderSentNotification {...props} />
     case NotificationType.TransactionReceived:
-      return (
-        <ReminderSentNotification notification={notification} userId={userId} />
-      )
+      return <ReminderSentNotification {...props} />
 
     default:
       return <></>

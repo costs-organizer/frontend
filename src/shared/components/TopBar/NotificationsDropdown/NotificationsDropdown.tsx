@@ -4,6 +4,7 @@ import { Notifications } from '@mui/icons-material'
 import { Badge, Grid, IconButton, Popover } from '@mui/material'
 import { MeQuery } from 'generated/graphql'
 import { meQuery } from 'graphql/auth'
+import { resetReceivedNotifications } from 'shared/store'
 import { useModal } from 'shared/utils'
 import NotificationEntry from './NotificationEntry'
 import { useNotifications } from './utils'
@@ -11,22 +12,33 @@ import { useNotifications } from './utils'
 const NotificationsDropdown = () => {
   const { handleClose, handleOpen, isOpen, anchorEl } = useModal()
   const { data: userData } = useQuery<MeQuery>(meQuery)
-  const { combinedNotifications, getNotifications } = useNotifications()
+  const {
+    combinedNotifications,
+    getNotifications,
+    unreadCount,
+    readNotifications,
+  } = useNotifications()
 
   const handlePopoverOpen = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
+      resetReceivedNotifications()
       handleOpen(event)
       getNotifications()
     },
     [getNotifications, handleOpen]
   )
+
+  const handleNotficationClick = (notificationId: number) => {
+    readNotifications({ variables: { notificationsIds: [notificationId] } })
+    handleClose()
+  }
   console.log(combinedNotifications)
   if (!userData?.me.id) return null
 
   return (
     <>
       <IconButton onClick={handlePopoverOpen}>
-        <Badge badgeContent={4} color="error">
+        <Badge badgeContent={unreadCount} color="error">
           <Notifications style={{ color: 'white' }} />
         </Badge>
       </IconButton>
@@ -45,6 +57,7 @@ const NotificationsDropdown = () => {
               key={`notification-${index}`}
               notification={notification}
               userId={userData?.me.id}
+              onNotificationClick={handleNotficationClick}
             />
           ))}
         </Grid>

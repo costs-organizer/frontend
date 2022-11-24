@@ -53,7 +53,7 @@ export const useOnSubmit = () => {
 
   const { loading } = data
   const onCompleted = useCallback(() => {
-    navigate(paths.groups)
+    navigate(paths.groups, { replace: true })
   }, [navigate])
   const onError = useCallback(
     (error: ApolloError) => {
@@ -64,6 +64,7 @@ export const useOnSubmit = () => {
   const onSubmit = useCallback(
     (values: LoginFormValues) => {
       login({
+        refetchQueries: [{ query: meQuery }],
         onCompleted,
         onError,
         variables: {

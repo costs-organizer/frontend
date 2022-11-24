@@ -8,4 +8,5 @@ export type QueryNotification = ArrayElement<
 export interface NotificationEntryProps {
   notification: QueryNotification
   userId: number
+  onNotificationClick: (notificationId: number) => void
 }

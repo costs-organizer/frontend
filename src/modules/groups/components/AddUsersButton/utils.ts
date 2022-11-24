@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
@@ -8,7 +7,7 @@ import {
   AddUserToGroupMutation,
   AddUserToGroupMutationVariables,
 } from 'generated/graphql'
-import { addUserToGroupMutation } from 'graphql/groups'
+import { addUserToGroupMutation, getSingleGroupQuery } from 'graphql/groups'
 import { array, mixed, object, SchemaOf } from 'yup'
 import { Entity } from 'shared/types'
 
@@ -49,6 +48,9 @@ export const useOnSubmit = (handleClose: () => void) => {
     AddUserToGroupMutationVariables
   >(addUserToGroupMutation, {
     onCompleted: handleClose,
+    refetchQueries: [
+      { query: getSingleGroupQuery, variables: { inp: Number(groupId) } },
+    ],
   })
 
   const onSubmit = useCallback(

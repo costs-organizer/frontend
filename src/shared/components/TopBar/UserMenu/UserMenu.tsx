@@ -3,7 +3,7 @@ import { useMutation } from '@apollo/client'
 import { AccountCircle } from '@mui/icons-material'
 import { Button, Skeleton } from '@mui/material'
 import { LogoutMutation, LogoutMutationVariables } from 'generated/graphql'
-import { logoutMutation } from 'graphql/auth'
+import { logoutMutation, meQuery } from 'graphql/auth'
 import { paths } from 'config'
 
 const LOADER_WIDTH = 80
@@ -19,6 +19,7 @@ const UserMenu = ({ name, isLoading }: UserMenuProps) => {
     logoutMutation,
     {
       onCompleted: () => navigate(paths.login),
+      refetchQueries: [{ query: meQuery }],
     }
   )
 

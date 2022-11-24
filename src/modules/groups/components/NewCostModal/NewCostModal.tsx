@@ -31,7 +31,8 @@ const NewCostModal = (dialogProps: NewCostModalProps) => {
     { variables: { inp: Number(groupId) } }
   )
   const handleClose = useHandleCloseModal(dialogProps.onClose)
-  const { loading, error, resetSubmit, ...formProps } = useNewCostForm()
+  const { loading, error, resetSubmit, ...formProps } =
+    useNewCostForm(handleClose)
   const membersOptions: Entity[] = useMemo(
     () =>
       groupData?.group.members.map(({ id, username }) => ({

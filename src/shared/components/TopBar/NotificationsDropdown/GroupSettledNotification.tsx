@@ -8,23 +8,21 @@ import { NotificationEntryProps } from './types'
 const GroupSettledNotification = ({
   notification,
   userId,
+  onNotificationClick,
 }: NotificationEntryProps) => {
   const navigate = useNavigate()
   const redirectionPath = generatePath(paths.group, {
     groupId: notification.group.id.toString(),
   })
   const handleClick = useCallback(() => {
+    onNotificationClick(notification.id)
     navigate(redirectionPath)
-  }, [navigate, redirectionPath])
+  }, [navigate, notification.id, onNotificationClick, redirectionPath])
 
   return (
     <NotificationWrapper item container onClick={handleClick}>
       <Grid item xs={1}>
-        <RedBadge
-          showBadge={notification.receivers
-            .map(({ id }) => id)
-            .includes(userId)}
-        />
+        <RedBadge showBadge={!notification.readBy.includes(userId)} />
       </Grid>
       <Grid item xs={4}>
         {notification.group.name}

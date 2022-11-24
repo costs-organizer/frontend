@@ -8,18 +8,19 @@ import { useUsersOptions } from './UsersSelectChips.utils'
 interface UsersSelectChipsProps {
   fieldName: string
   defaultOptions?: Entity[]
-  excludeMe?: boolean
+  excludedUserIds?: number[]
 }
 
 const UsersSelectChips = ({
   fieldName,
   defaultOptions,
+  excludedUserIds = [],
 }: UsersSelectChipsProps) => {
   const { setValue } = useFormContext()
   const users = useWatch({ name: fieldName }) as Entity[] | null | undefined
 
   const { areUserOptionsLoading, handleInputChange, options } =
-    useUsersOptions()
+    useUsersOptions(excludedUserIds)
 
   const inputOptions = useMemo(
     () => defaultOptions || options,

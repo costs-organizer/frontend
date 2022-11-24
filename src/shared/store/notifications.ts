@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   GetUserNotificationsQuery,
-  ReminderNotificationSubscription,
+  NotificationSentSubscription,
 } from 'generated/graphql'
 
 interface NotificationsState {
   notifications: GetUserNotificationsQuery['notifications']
-  receivedNotifications: ReminderNotificationSubscription['reminderSent'][]
+  receivedNotifications: NotificationSentSubscription['notificationSent'][]
 }
 
 const initialState: NotificationsState = {
@@ -20,7 +20,7 @@ const counterSlice = createSlice({
   reducers: {
     addReceivedNotification(
       state,
-      action: PayloadAction<ReminderNotificationSubscription['reminderSent']>
+      action: PayloadAction<NotificationSentSubscription['notificationSent']>
     ) {
       state.receivedNotifications.push(action.payload)
     },

@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client'
 import { GetUsersQuery, GetUsersQueryVariables } from 'generated/graphql'
 import { getUsersQuery } from 'graphql/users'
 
-export const useUsersOptions = () => {
+export const useUsersOptions = (excludedUserIds: number[]) => {
   const [inputValue, setInputValue] = useState<string>()
   const { data, loading } = useQuery<GetUsersQuery, GetUsersQueryVariables>(
     getUsersQuery,
@@ -22,10 +22,12 @@ export const useUsersOptions = () => {
     []
   )
 
-  const options = data?.users.map(({ id, username }) => ({
-    id,
-    name: username,
-  }))
+  const options = data?.users
+    .filter(user => !excludedUserIds.includes(user.id))
+    .map(({ id, username }) => ({
+      id,
+      name: username,
+    }))
 
   return { options, handleInputChange, areUserOptionsLoading: loading }
 }

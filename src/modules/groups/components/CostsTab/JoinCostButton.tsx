@@ -6,6 +6,7 @@ import { IconButton } from '@mui/material'
 import { JoinCostMutation, JoinCostMutationVariables } from 'generated/graphql'
 import { getCostsQuery, joinCostMutation } from 'graphql/costs'
 import { Loader } from 'shared/components'
+import { useCostsTabContext } from '../../utils'
 
 interface JoinCostButtonProps {
   costId: number
@@ -13,6 +14,8 @@ interface JoinCostButtonProps {
 
 const JoinCostButton = ({ costId }: JoinCostButtonProps) => {
   const { groupId } = useParams()
+  const { showOnlyMy } = useCostsTabContext()
+
   const [joinCost, { loading }] = useMutation<
     JoinCostMutation,
     JoinCostMutationVariables
@@ -24,6 +27,7 @@ const JoinCostButton = ({ costId }: JoinCostButtonProps) => {
         variables: {
           inp: {
             groupId: Number(groupId),
+            filterByName: showOnlyMy,
           },
         },
       },

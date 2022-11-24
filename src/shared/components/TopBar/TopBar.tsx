@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 import { HandshakeOutlined } from '@mui/icons-material'
 import { AppBar, Typography } from '@mui/material'
@@ -10,15 +12,23 @@ import { LogoLink, Toolbar, UserMenuContainer } from './TopBar.styles'
 import './TopBar.utils'
 
 const TopBar = () => {
-  const { data, loading } = useQuery<MeQuery, MeQueryVariables>(meQuery)
+  const { data, loading, error, refetch } = useQuery<MeQuery, MeQueryVariables>(
+    meQuery
+  )
+  const { pathname } = useLocation()
+  useEffect(() => {
+    refetch()
+  }, [pathname, refetch])
+
+  console.log(data, error)
   return (
     <AppBar>
       <Toolbar>
-        <LogoLink to={paths.root}>
+        <LogoLink to={!error ? paths.groups : paths.login}>
           <HandshakeOutlined fontSize="large" />
           <Typography variant="h6">Debts Setler</Typography>
         </LogoLink>
-        {!!data && (
+        {!error && (
           <UserMenuContainer>
             <NotificationsDropdown />
             <UserMenu name={data?.me.username} isLoading={loading} />

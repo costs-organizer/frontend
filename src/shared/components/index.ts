@@ -24,6 +24,7 @@ export { default as AutocompleteField } from './AutocompleteField'
 export { default as LoadingButton } from './LoadingButton'
 
 export { default as Tabs } from './Tabs'
+export { default as ConfirmationModal } from './ConfirmationModal'
 
 export * from './DialogContent'
 

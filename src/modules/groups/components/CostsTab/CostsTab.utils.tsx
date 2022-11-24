@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { PropsWithChildren, useContext, useMemo, useState } from 'react'
+import React, { createContext } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 import {
@@ -10,7 +11,7 @@ import { meQuery } from 'graphql/auth'
 import { getCostsQuery } from 'graphql/costs'
 import { Column } from 'shared/components'
 import { ArrayElement } from 'shared/utils'
-import JoinCostButton from '../JoinCostButton'
+import ActionsColumn from './ActionsColumn'
 
 export type CostType = ArrayElement<GetCostsQuery['costs']>
 
@@ -52,10 +53,11 @@ export const useCostsTable = () => {
       },
       {
         label: 'actions',
-        renderValue: (row: CostType) =>
-          row.participants.some(({ id }) => id === userData?.me.id) ? null : (
-            <JoinCostButton costId={row.id} />
-          ),
+        renderValue: (row: CostType) => {
+          if (!userData?.me.id) return null
+
+          return <ActionsColumn cost={row} userId={userData?.me.id} />
+        },
       },
     ],
     [userData?.me.id]

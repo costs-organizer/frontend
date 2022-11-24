@@ -79,6 +79,8 @@ export type Group = {
   createdBy: User
   createdById: User
   deletedAt?: Maybe<Scalars['DateTime']>
+  groupResolvedNotification: Notification
+  groupResolvedNotificationId: Notification
   id: Scalars['Int']
   members: Array<User>
   name: Scalars['String']
@@ -184,6 +186,7 @@ export type Query = {
   cost: Cost
   costs: Array<Cost>
   findOne: Notification
+  getUnreadCount: Scalars['Int']
   group: Group
   groups: Array<Group>
   me: User
@@ -243,6 +246,7 @@ export type RemoveUserFromGroupInput = {
 
 export type Subscription = {
   __typename?: 'Subscription'
+  notificationSent: Notification
   reminderSent: Notification
   transactionCompleted: Notification
 }
@@ -260,6 +264,8 @@ export type Transaction = {
   payerId: Scalars['Float']
   receiver: User
   receiverId: Scalars['Float']
+  reminderNotification: Notification
+  reminderNotificationId: Scalars['Float']
   updatedAt?: Maybe<Scalars['DateTime']>
 }
 
@@ -413,7 +419,12 @@ export type GetGroupQuery = {
     createdAt?: any | null
     name: string
     createdBy: { __typename?: 'User'; id: number; username: string }
-    members: Array<{ __typename?: 'User'; id: number; username: string }>
+    members: Array<{
+      __typename?: 'User'
+      id: number
+      username: string
+      participatedCosts: Array<{ __typename?: 'Cost'; id: number }>
+    }>
     costs: Array<{
       __typename?: 'Cost'
       id: number
@@ -437,6 +448,13 @@ export type RemoveUserFromGroupMutation = {
   removeUserFromGroup: number
 }
 
+export type GetUnreadCountQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetUnreadCountQuery = {
+  __typename?: 'Query'
+  getUnreadCount: number
+}
+
 export type GetUserNotificationsQueryVariables = Exact<{ [key: string]: never }>
 
 export type GetUserNotificationsQuery = {
@@ -450,6 +468,23 @@ export type GetUserNotificationsQuery = {
     receivers: Array<{ __typename?: 'User'; id: number; username: string }>
     createdBy: { __typename?: 'User'; id: number; username: string }
   }>
+}
+
+export type NotificationSentSubscriptionVariables = Exact<{
+  [key: string]: never
+}>
+
+export type NotificationSentSubscription = {
+  __typename?: 'Subscription'
+  notificationSent: {
+    __typename?: 'Notification'
+    id: number
+    type: NotificationType
+    readBy: Array<number>
+    group: { __typename?: 'Group'; id: number; name: string }
+    receivers: Array<{ __typename?: 'User'; id: number; username: string }>
+    createdBy: { __typename?: 'User'; id: number; username: string }
+  }
 }
 
 export type ReadNotificationsMutationVariables = Exact<{

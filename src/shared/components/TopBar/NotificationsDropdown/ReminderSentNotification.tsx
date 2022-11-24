@@ -8,6 +8,7 @@ import { NotificationEntryProps } from './types'
 const ReminderSentNotification = ({
   notification,
   userId,
+  onNotificationClick,
 }: NotificationEntryProps) => {
   const navigate = useNavigate()
   const redirectionPath = generatePath(paths.group, {
@@ -15,16 +16,13 @@ const ReminderSentNotification = ({
   })
   const handleClick = useCallback(() => {
     navigate(redirectionPath)
-  }, [navigate, redirectionPath])
+    onNotificationClick(notification.id)
+  }, [navigate, notification.id, onNotificationClick, redirectionPath])
 
   return (
     <NotificationWrapper item container onClick={handleClick}>
       <Grid item xs={1}>
-        <RedBadge
-          showBadge={notification.receivers
-            .map(({ id }) => id)
-            .includes(userId)}
-        />
+        <RedBadge showBadge={!notification.readBy.includes(userId)} />
       </Grid>
       <Grid item xs={11}>
         {notification.createdBy.username} has sent you reminder in{' '}

@@ -10,6 +10,7 @@ import {
 import { createCostMutation, getCostsQuery } from 'graphql/costs'
 import { array, boolean, mixed, number, object, SchemaOf, string } from 'yup'
 import { Entity } from 'shared/types'
+import { useCostsTabContext } from '../../utils'
 
 export enum NewCostFormFields {
   Name = 'name',
@@ -44,29 +45,32 @@ export const formSchema: SchemaOf<NewCostFormValues> = object()
   })
   .required()
 
-export const useNewCostForm = () => {
+export const useNewCostForm = (onClose: () => void) => {
   const formProps = useForm<NewCostFormValues>({
     defaultValues,
     resolver: yupResolver(formSchema),
     reValidateMode: 'onChange',
   })
 
-  const submitProps = useOnSubmit()
+  const submitProps = useOnSubmit(onClose)
 
   return { ...formProps, ...submitProps }
 }
 
-export const useOnSubmit = () => {
+export const useOnSubmit = (onClose: () => void) => {
   const { groupId } = useParams()
+  const { showOnlyMy } = useCostsTabContext()
+
   const [createCost, { loading, error, reset }] = useMutation<
     CreateCostMutation,
     CreateCostMutationVariables
   >(createCostMutation, {
+    onCompleted: () => onClose(),
     refetchQueries: [
       {
         query: getCostsQuery,
         variables: {
-          inp: { groupId: Number(groupId) },
+          inp: { groupId: Number(groupId), filterByName: showOnlyMy },
         },
       },
     ],
