@@ -7,6 +7,7 @@ import {
   LinearProgress,
   Alert,
 } from '@mui/material'
+import { StyledTableRow } from './DataTable.styles'
 import { DataTableProps } from './DataTable.types'
 
 const DataTable = <Row extends {} | undefined>({
@@ -31,17 +32,23 @@ const DataTable = <Row extends {} | undefined>({
       <Table>
         <TableHead>
           {columns.map((col, index) => (
-            <TableCell key={`head-cell-${index}`}>{col.label}</TableCell>
+            <TableCell key={`head-cell-${index}`}>
+              <strong>{col.label}</strong>
+            </TableCell>
           ))}
         </TableHead>
         {data?.map((row, rowIndex) => (
-          <TableRow key={`row-${rowIndex}`} onClick={() => handleRowClick(row)}>
+          <StyledTableRow
+            clickable={!!onRowClick}
+            key={`row-${rowIndex}`}
+            onClick={() => handleRowClick(row)}
+          >
             {columns.map((col, colIndex) => (
               <TableCell key={`row-col-${colIndex}`}>
                 {col.renderValue(row)}
               </TableCell>
             ))}
-          </TableRow>
+          </StyledTableRow>
         ))}
       </Table>
     </>

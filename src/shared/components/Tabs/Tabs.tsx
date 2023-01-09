@@ -1,6 +1,12 @@
-import { ReactNode, SyntheticEvent, useState } from 'react'
-import { Tabs as BaseTabs, Tab } from '@mui/material'
+import { ReactNode } from 'react'
+import { Tabs as BaseTabs, Tab, styled } from '@mui/material'
 import { useCurrentTab } from './Tabs.utils'
+
+const DEFAULT_TAB = 0
+
+const PanelsContainer = styled('div')(({ theme }) => ({
+  padding: theme.spacing(2.5),
+}))
 
 interface TabsProps {
   panels: ReactNode[]
@@ -9,14 +15,15 @@ interface TabsProps {
 
 const Tabs = ({ labels, panels }: TabsProps) => {
   const { currentTab, handleTabChange } = useCurrentTab()
+
   return (
     <>
-      <BaseTabs value={currentTab} onChange={handleTabChange}>
+      <BaseTabs value={currentTab || 0} onChange={handleTabChange}>
         {labels.map((label, index) => (
           <Tab value={index} label={label} key={`tab-label-${index}`} />
         ))}
       </BaseTabs>
-      {panels[currentTab]}
+      <PanelsContainer>{panels[currentTab || DEFAULT_TAB]}</PanelsContainer>
     </>
   )
 }

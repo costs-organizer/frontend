@@ -6,6 +6,7 @@ import { Container, Main } from './Layout.styles'
 export interface LayoutProps {}
 
 const Layout = (props: LayoutProps) => {
+  console.log('XCdasd')
   return (
     <Container {...props}>
       <TopBar />

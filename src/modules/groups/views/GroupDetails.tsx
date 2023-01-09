@@ -1,9 +1,11 @@
 import { useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, NavLink, useParams } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
-import { Grid, Typography } from '@mui/material'
+import { NavigateNext } from '@mui/icons-material'
+import { Breadcrumbs, Grid, styled, Typography } from '@mui/material'
 import { GetGroupQuery, GetGroupQueryVariables } from 'generated/graphql'
 import { getSingleGroupQuery } from 'graphql/groups/getSingleGroup'
+import { paths } from 'config'
 import { Loader, Tabs } from 'shared/components'
 import {
   AddUsersButton,
@@ -11,6 +13,13 @@ import {
   TransactionsTab,
   UsersDropdown,
 } from '../components'
+
+const StyledLink = styled(Link)(({ theme }) => ({
+  '& , &:active, &:visited': {
+    color: theme.palette.text.secondary,
+    textDecoration: 'none',
+  },
+}))
 
 const GroupDetails = () => {
   const { groupId } = useParams<{ groupId: string }>()
@@ -34,7 +43,13 @@ const GroupDetails = () => {
   if (loading) return <Loader />
 
   return (
-    <Grid container>
+    <Grid container spacing={2}>
+      <Grid item>
+        <Breadcrumbs separator={<NavigateNext fontSize="small" />}>
+          <StyledLink to={paths.groups}>Groups List</StyledLink>
+          <span>{data?.group.name}</span>
+        </Breadcrumbs>
+      </Grid>
       <Grid
         container
         item

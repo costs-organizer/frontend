@@ -1,7 +1,8 @@
 import { useCallback } from 'react'
-import { useNavigate, generatePath } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Grid } from '@mui/material'
 import { paths } from 'config'
+import { generatePathWithQuery } from 'shared/utils'
 import { NotificationWrapper, RedBadge } from './styles'
 import { NotificationEntryProps } from './types'
 
@@ -11,9 +12,14 @@ const TransactionReceivedNotification = ({
   onNotificationClick,
 }: NotificationEntryProps) => {
   const navigate = useNavigate()
-  const redirectionPath = generatePath(paths.group, {
-    groupId: notification.group.id.toString(),
+  const redirectionPath = generatePathWithQuery({
+    path: paths.group,
+    params: {
+      groupId: notification.group.id.toString(),
+    },
+    qs: { currentTab: 1 },
   })
+
   const handleClick = useCallback(() => {
     onNotificationClick(notification.id)
     navigate(redirectionPath)
@@ -24,11 +30,10 @@ const TransactionReceivedNotification = ({
       <Grid item xs={1}>
         <RedBadge showBadge={!notification.readBy.includes(userId)} />
       </Grid>
-      <Grid item xs={4}>
-        {notification.createdBy.username}
-      </Grid>
-      <Grid item xs={7}>
-        Has paid you back in <strong>{notification.group.name}</strong>
+      <Grid item xs={11}>
+        <strong>{notification.createdBy.username}</strong> has paid you back
+        in&nbsp;
+        <strong>{notification.group.name}</strong>
       </Grid>
     </NotificationWrapper>
   )

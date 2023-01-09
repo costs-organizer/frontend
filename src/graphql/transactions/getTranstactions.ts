@@ -14,6 +14,7 @@ export const getTranstactionsQuery = gql`
         id
         username
       }
+      confirmationFileURL
     }
   }
 `

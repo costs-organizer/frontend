@@ -6,11 +6,22 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import {
   CreateCostMutation,
   CreateCostMutationVariables,
+  EditCostMutation,
+  EditCostMutationVariables,
+  GetCostsQuery,
 } from 'generated/graphql'
-import { createCostMutation, getCostsQuery } from 'graphql/costs'
+import {
+  createCostMutation,
+  editCostMutation,
+  getCostsQuery,
+} from 'graphql/costs'
+import { useSnackbar } from 'notistack'
 import { array, boolean, mixed, number, object, SchemaOf, string } from 'yup'
 import { Entity } from 'shared/types'
+import { ArrayElement } from 'shared/utils'
 import { useCostsTabContext } from '../../utils'
+
+export type CostType = ArrayElement<GetCostsQuery['costs']>
 
 export enum NewCostFormFields {
   Name = 'name',
@@ -28,11 +39,18 @@ export interface NewCostFormValues {
   [NewCostFormFields.MoneyAmount]?: number
 }
 
-export const defaultValues: NewCostFormValues = {
-  description: '',
-  name: '',
-  participants: [],
-  includeMe: false,
+export const getDefaultValues = (cost?: CostType | null): NewCostFormValues => {
+  return {
+    description: cost?.name || '',
+    name: cost?.description || '',
+    participants:
+      cost?.participants.map(({ id, username }) => ({
+        id: id,
+        name: username,
+      })) || [],
+    moneyAmount: cost?.moneyAmount || undefined,
+    includeMe: false,
+  }
 }
 
 export const formSchema: SchemaOf<NewCostFormValues> = object()
@@ -45,27 +63,46 @@ export const formSchema: SchemaOf<NewCostFormValues> = object()
   })
   .required()
 
-export const useNewCostForm = (onClose: () => void) => {
+export const useNewCostForm = (onClose: () => void, cost?: CostType | null) => {
   const formProps = useForm<NewCostFormValues>({
-    defaultValues,
+    defaultValues: getDefaultValues(cost),
     resolver: yupResolver(formSchema),
     reValidateMode: 'onChange',
   })
 
-  const submitProps = useOnSubmit(onClose)
+  const submitProps = useOnSubmit(onClose, cost)
 
   return { ...formProps, ...submitProps }
 }
 
-export const useOnSubmit = (onClose: () => void) => {
+export const useOnSubmit = (onClose: () => void, cost?: CostType | null) => {
   const { groupId } = useParams()
   const { showOnlyMy } = useCostsTabContext()
 
-  const [createCost, { loading, error, reset }] = useMutation<
+  const { enqueueSnackbar } = useSnackbar()
+
+  const [createCost, { loading: creating }] = useMutation<
     CreateCostMutation,
     CreateCostMutationVariables
   >(createCostMutation, {
     onCompleted: () => onClose(),
+    onError: error => enqueueSnackbar(error.message),
+    refetchQueries: [
+      {
+        query: getCostsQuery,
+        variables: {
+          inp: { groupId: Number(groupId), filterByName: showOnlyMy },
+        },
+      },
+    ],
+  })
+
+  const [editCost, { loading: editing }] = useMutation<
+    EditCostMutation,
+    EditCostMutationVariables
+  >(editCostMutation, {
+    onCompleted: () => onClose(),
+    onError: error => enqueueSnackbar(error.message),
     refetchQueries: [
       {
         query: getCostsQuery,
@@ -79,7 +116,22 @@ export const useOnSubmit = (onClose: () => void) => {
   const onSubmit = useCallback(
     (values: NewCostFormValues) => {
       if (!groupId || !values.moneyAmount) return
-      createCost({
+
+      if (cost?.id) {
+        return editCost({
+          variables: {
+            inp: {
+              costId: cost.id,
+              description: values[NewCostFormFields.Description],
+              moneyAmount: values.moneyAmount,
+              name: values[NewCostFormFields.Name],
+              participantsIds: values.participants.map(({ id }) => id),
+            },
+          },
+        })
+      }
+
+      return createCost({
         variables: {
           inp: {
             groupId: parseInt(groupId),
@@ -91,13 +143,11 @@ export const useOnSubmit = (onClose: () => void) => {
         },
       })
     },
-    [createCost, groupId]
+    [cost, createCost, editCost, groupId]
   )
 
   return {
-    loading,
-    error,
-    resetSubmit: reset,
+    loading: creating || editing,
     onSubmit,
   }
 }

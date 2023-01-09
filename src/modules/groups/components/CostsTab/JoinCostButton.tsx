@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { AddOutlined } from '@mui/icons-material'
-import { IconButton } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import { JoinCostMutation, JoinCostMutationVariables } from 'generated/graphql'
 import { getCostsQuery, joinCostMutation } from 'graphql/costs'
 import { Loader } from 'shared/components'
@@ -41,9 +41,11 @@ const JoinCostButton = ({ costId }: JoinCostButtonProps) => {
   if (loading) return <Loader size={10} />
 
   return (
-    <IconButton onClick={handleClick}>
-      <AddOutlined />
-    </IconButton>
+    <Tooltip title="Join Cost" placement="top">
+      <IconButton onClick={handleClick}>
+        <AddOutlined />
+      </IconButton>
+    </Tooltip>
   )
 }
 

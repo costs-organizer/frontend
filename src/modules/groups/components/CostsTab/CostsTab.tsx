@@ -8,12 +8,29 @@ import { useCostsTable } from './CostsTab.utils'
 interface CostsTabProps {}
 
 const CostsTab = (props: CostsTabProps) => {
-  const { columns, costs, loading, setShowOnlyMy, showOnlyMy } = useCostsTable()
-  const { handleClose, handleOpen, isOpen } = useModal()
-  console.log(loading)
+  const {
+    columns,
+    costs,
+    loading,
+    setShowOnlyMy,
+    showOnlyMy,
+    editedCost,
+    handleEditModalClose,
+  } = useCostsTable()
+  const { handleClose: handleCreateClose, handleOpen, isOpen } = useModal()
+
+  const handleModalClose = () => {
+    handleEditModalClose()
+    handleCreateClose()
+  }
+
   return (
     <CostsTabProvider showOnlyMy={showOnlyMy}>
-      <NewCostModal open={isOpen} onClose={handleClose} />
+      <NewCostModal
+        open={isOpen || !!editedCost}
+        onClose={handleModalClose}
+        cost={editedCost}
+      />
       <Grid container>
         <Grid item container justifyContent="space-between" xs={12}>
           <Grid item>

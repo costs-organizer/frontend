@@ -1,7 +1,8 @@
 import { useCallback } from 'react'
-import { generatePath, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Grid } from '@mui/material'
 import { paths } from 'config'
+import { generatePathWithQuery } from 'shared/utils'
 import { NotificationWrapper, RedBadge } from './styles'
 import { NotificationEntryProps } from './types'
 
@@ -11,8 +12,11 @@ const GroupSettledNotification = ({
   onNotificationClick,
 }: NotificationEntryProps) => {
   const navigate = useNavigate()
-  const redirectionPath = generatePath(paths.group, {
-    groupId: notification.group.id.toString(),
+  const redirectionPath = generatePathWithQuery({
+    path: paths.group,
+    params: {
+      groupId: notification.group.id.toString(),
+    },
   })
   const handleClick = useCallback(() => {
     onNotificationClick(notification.id)

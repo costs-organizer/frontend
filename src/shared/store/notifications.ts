@@ -22,7 +22,7 @@ const counterSlice = createSlice({
       state,
       action: PayloadAction<NotificationSentSubscription['notificationSent']>
     ) {
-      state.receivedNotifications.push(action.payload)
+      state.receivedNotifications.unshift(action.payload)
     },
     resetReceivedNotifications(state) {
       state.receivedNotifications = []

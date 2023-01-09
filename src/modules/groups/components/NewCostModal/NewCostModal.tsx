@@ -20,19 +20,26 @@ import {
 import { Entity } from 'shared/types'
 import { useHandleCloseModal } from 'shared/utils'
 import UsersSelectChips from '../UsersSelectChips'
-import { NewCostFormFields, useNewCostForm } from './NewCostModal.utils'
+import {
+  CostType,
+  getDefaultValues,
+  NewCostFormFields,
+  useNewCostForm,
+} from './NewCostModal.utils'
 
-interface NewCostModalProps extends DialogProps {}
+interface NewCostModalProps extends DialogProps {
+  cost?: CostType | null
+}
 
-const NewCostModal = (dialogProps: NewCostModalProps) => {
+const NewCostModal = ({ cost, ...dialogProps }: NewCostModalProps) => {
   const { groupId } = useParams()
   const { data: groupData } = useQuery<GetGroupQuery, GetGroupQueryVariables>(
     getSingleGroupQuery,
     { variables: { inp: Number(groupId) } }
   )
+
   const handleClose = useHandleCloseModal(dialogProps.onClose)
-  const { loading, error, resetSubmit, ...formProps } =
-    useNewCostForm(handleClose)
+  const { loading, ...formProps } = useNewCostForm(handleClose, cost)
   const membersOptions: Entity[] = useMemo(
     () =>
       groupData?.group.members.map(({ id, username }) => ({
@@ -41,6 +48,14 @@ const NewCostModal = (dialogProps: NewCostModalProps) => {
       })) || [],
     [groupData?.group.members]
   )
+
+  useEffect(() => {
+    formProps.reset(getDefaultValues(cost))
+
+    return () => {
+      formProps.reset(getDefaultValues(null))
+    }
+  }, [cost?.id]) //eslint-disable-line
 
   return (
     <Dialog {...dialogProps}>

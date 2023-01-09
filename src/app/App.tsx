@@ -3,14 +3,15 @@ import { Provider } from 'react-redux'
 import { unstable_HistoryRouter as HistoryRouter } from 'react-router-dom'
 import {
   ApolloClient,
+  ApolloLink,
   ApolloProvider,
-  HttpLink,
   InMemoryCache,
   split,
 } from '@apollo/client'
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { getMainDefinition } from '@apollo/client/utilities'
 import { CssBaseline, ThemeProvider } from '@mui/material'
+import { createUploadLink } from 'apollo-upload-client'
 import { createClient } from 'graphql-ws'
 import { SnackbarProvider } from 'notistack'
 import { Loader } from 'shared/components'
@@ -18,14 +19,14 @@ import theme from 'shared/theme'
 import AppRoutes from './App.routes'
 import { store, history } from './App.store'
 
-const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/graphql',
+const httpLink = createUploadLink({
+  uri: import.meta.env.VITE_API_URL,
   credentials: 'include',
-})
+}) as unknown as ApolloLink
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: 'ws://localhost:4000/graphql',
+    url: import.meta.env.VITE_WS_URL || '',
   })
 )
 

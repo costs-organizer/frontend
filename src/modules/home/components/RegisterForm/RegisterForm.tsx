@@ -1,12 +1,14 @@
-import { FunctionComponent } from 'react'
 import { Grid } from '@mui/material'
-import { Form, LoadingButton, TextField } from 'shared/components'
+import {
+  Form,
+  LoadingButton,
+  PasswordField,
+  TextField,
+} from 'shared/components'
 import { FormWrapper } from '../FormWrapper'
 import { RegisterFormFields, useRegisterForm } from './RegisterForm.utils'
 
-interface RegisterFormProps {}
-
-const RegisterForm: FunctionComponent<RegisterFormProps> = () => {
+const RegisterForm = () => {
   const { loading, ...formProps } = useRegisterForm()
 
   return (
@@ -28,11 +30,24 @@ const RegisterForm: FunctionComponent<RegisterFormProps> = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <PasswordField
               name={RegisterFormFields.Password}
               placeholder="password"
               fullWidth
-              type="password"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name={RegisterFormFields.Phone}
+              placeholder="phone"
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name={RegisterFormFields.IBAN}
+              placeholder="IBAN"
+              fullWidth
             />
           </Grid>
           <Grid item xs={12}>

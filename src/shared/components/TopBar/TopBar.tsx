@@ -20,7 +20,6 @@ const TopBar = () => {
     refetch()
   }, [pathname, refetch])
 
-  console.log(data, error)
   return (
     <AppBar>
       <Toolbar>
@@ -30,7 +29,9 @@ const TopBar = () => {
         </LogoLink>
         {!error && (
           <UserMenuContainer>
-            <NotificationsDropdown />
+            <div>
+              <NotificationsDropdown />
+            </div>
             <UserMenu name={data?.me.username} isLoading={loading} />
           </UserMenuContainer>
         )}

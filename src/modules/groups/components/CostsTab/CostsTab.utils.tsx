@@ -28,6 +28,16 @@ export const useCostsTable = () => {
     }
   )
 
+  const [editedCost, setEditedCost] = useState<CostType | null>(null)
+
+  const handleEditModalOpen = (cost: CostType) => {
+    setEditedCost(cost)
+  }
+
+  const handleEditModalClose = () => {
+    setEditedCost(null)
+  }
+
   const columns: Column<CostType>[] = useMemo(
     () => [
       {
@@ -56,7 +66,13 @@ export const useCostsTable = () => {
         renderValue: (row: CostType) => {
           if (!userData?.me.id) return null
 
-          return <ActionsColumn cost={row} userId={userData?.me.id} />
+          return (
+            <ActionsColumn
+              cost={row}
+              userId={userData?.me.id}
+              openEditModal={handleEditModalOpen}
+            />
+          )
         },
       },
     ],
@@ -69,5 +85,7 @@ export const useCostsTable = () => {
     setShowOnlyMy,
     showOnlyMy,
     costs: data?.costs,
+    editedCost,
+    handleEditModalClose,
   }
 }

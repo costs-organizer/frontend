@@ -15,6 +15,8 @@ export const LogoLink = styled(Link)(({ theme }) => ({
 }))
 
 export const UserMenuContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
   padding: theme.spacing(0, 5.5),
   '& button': {
     marginRight: theme.spacing(5),

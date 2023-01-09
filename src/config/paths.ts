@@ -4,6 +4,7 @@ const paths = {
   register: '/register',
   groups: '/groups',
   group: '/group/:groupId',
+  userInfo: '/user-info',
   signIn: '/sign-in',
   signUp: '/sign-up',
   // <-- paths-end -->

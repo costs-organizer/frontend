@@ -32,7 +32,7 @@ const NotificationsDropdown = () => {
     readNotifications({ variables: { notificationsIds: [notificationId] } })
     handleClose()
   }
-  console.log(combinedNotifications)
+
   if (!userData?.me.id) return null
 
   return (

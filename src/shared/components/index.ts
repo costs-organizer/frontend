@@ -19,12 +19,20 @@ export { default as ActionButton } from './ActionButton'
 export type { ActionButtonProps } from './ActionButton'
 
 export { default as TextField } from './TextField'
+export { default as PasswordField } from './PasswordField'
 export { default as AutocompleteField } from './AutocompleteField'
 
 export { default as LoadingButton } from './LoadingButton'
 
 export { default as Tabs } from './Tabs'
-export { default as ConfirmationModal } from './ConfirmationModal'
+
+export { default as FileUploadField } from './FileUploadField'
+
+export {
+  default as ConfirmationModal,
+  ModalWrapper,
+  Title,
+} from './ConfirmationModal'
 
 export * from './DialogContent'
 

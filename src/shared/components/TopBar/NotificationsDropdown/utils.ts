@@ -38,14 +38,11 @@ export const useNotifications = () => {
     NotificationSentSubscription,
     NotificationSentSubscriptionVariables
   >(notificationSentSubscription, {
-    onSubscriptionComplete: () => console.log('complete'),
     onSubscriptionData: ({ subscriptionData }) => {
       if (!subscriptionData.data?.notificationSent) return
       dispatch(addReceivedNotification(subscriptionData.data?.notificationSent))
     },
   })
-
-  console.log(a.error, a.data)
 
   const [getNotifications, { data, loading: notificationsLoading }] =
     useLazyQuery<GetUserNotificationsQuery, GetUserNotificationsQueryVariables>(

@@ -26,6 +26,18 @@ const routes: RouteObject[] = [
       },
     ],
   },
+  {
+    path: paths.userInfo,
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <Loadable component={lazy(() => import('./views/UserInfo'))} />
+        ),
+      },
+    ],
+  },
 ]
 
 export default routes

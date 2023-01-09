@@ -17,6 +17,7 @@ export type Scalars = {
   Int: number
   Float: number
   DateTime: any
+  Upload: any
 }
 
 export type AddNewUsersInput = {
@@ -53,6 +54,24 @@ export type CreateGroupInput = {
   userIds: Array<Scalars['Int']>
 }
 
+export type EditCostInput = {
+  costId: Scalars['Int']
+  description: Scalars['String']
+  moneyAmount: Scalars['Int']
+  name: Scalars['String']
+  participantsIds: Array<Scalars['Int']>
+}
+
+export type EditMeInput = {
+  email: Scalars['String']
+  IBAN?: InputMaybe<Scalars['String']>
+  id: Scalars['Int']
+  newPassword?: InputMaybe<Scalars['String']>
+  oldPassword?: InputMaybe<Scalars['String']>
+  phone?: InputMaybe<Scalars['String']>
+  username: Scalars['String']
+}
+
 export type FindAllCostsInput = {
   filterByName?: InputMaybe<Scalars['Boolean']>
   groupId: Scalars['Int']
@@ -70,6 +89,12 @@ export type FindAllTransactionsInput = {
 export type FindAllUsersInput = {
   groupId?: InputMaybe<Scalars['Float']>
   search?: InputMaybe<Scalars['String']>
+}
+
+export type GetTransactionConfirmationFileOutput = {
+  __typename?: 'GetTransactionConfirmationFileOutput'
+  base64File: Scalars['String']
+  filename: Scalars['String']
 }
 
 export type Group = {
@@ -100,6 +125,8 @@ export type Mutation = {
   completeTransaction: Scalars['Int']
   createCost: Scalars['Int']
   createGroup: Scalars['Int']
+  editCost: Scalars['Int']
+  editMe: Scalars['Int']
   joinCost: Scalars['Int']
   login: Scalars['String']
   logout: Scalars['String']
@@ -109,6 +136,7 @@ export type Mutation = {
   removeUser: User
   removeUserFromGroup: Scalars['Int']
   sendReminder: Scalars['Int']
+  uploadConmfirmationFile: Scalars['String']
 }
 
 export type MutationAddNewUsersArgs = {
@@ -116,6 +144,7 @@ export type MutationAddNewUsersArgs = {
 }
 
 export type MutationCompleteTransactionArgs = {
+  fileURL?: InputMaybe<Scalars['String']>
   transactionId: Scalars['Int']
 }
 
@@ -125,6 +154,14 @@ export type MutationCreateCostArgs = {
 
 export type MutationCreateGroupArgs = {
   createGroupInput: CreateGroupInput
+}
+
+export type MutationEditCostArgs = {
+  editCostInput: EditCostInput
+}
+
+export type MutationEditMeArgs = {
+  editMeInput: EditMeInput
 }
 
 export type MutationJoinCostArgs = {
@@ -159,6 +196,10 @@ export type MutationSendReminderArgs = {
   transactionId: Scalars['Int']
 }
 
+export type MutationUploadConmfirmationFileArgs = {
+  file: Scalars['Upload']
+}
+
 export type Notification = {
   __typename?: 'Notification'
   createdAt?: Maybe<Scalars['DateTime']>
@@ -186,6 +227,7 @@ export type Query = {
   cost: Cost
   costs: Array<Cost>
   findOne: Notification
+  getTransactionConfirmationFile: GetTransactionConfirmationFileOutput
   getUnreadCount: Scalars['Int']
   group: Group
   groups: Array<Group>
@@ -207,6 +249,10 @@ export type QueryCostsArgs = {
 
 export type QueryFindOneArgs = {
   notificationId: Scalars['Int']
+}
+
+export type QueryGetTransactionConfirmationFileArgs = {
+  transactionId: Scalars['Int']
 }
 
 export type QueryGroupArgs = {
@@ -235,8 +281,10 @@ export type QueryUsersArgs = {
 
 export type RegisterInput = {
   email: Scalars['String']
+  IBAN?: InputMaybe<Scalars['String']>
   name: Scalars['String']
   password: Scalars['String']
+  phone?: InputMaybe<Scalars['String']>
 }
 
 export type RemoveUserFromGroupInput = {
@@ -253,6 +301,7 @@ export type Subscription = {
 
 export type Transaction = {
   __typename?: 'Transaction'
+  confirmationFileURL: Scalars['String']
   createdAt?: Maybe<Scalars['DateTime']>
   deletedAt?: Maybe<Scalars['DateTime']>
   group: Group
@@ -277,12 +326,14 @@ export type User = {
   createdNotifications: Array<Notification>
   deletedAt?: Maybe<Scalars['DateTime']>
   email: Scalars['String']
+  IBAN?: Maybe<Scalars['String']>
   id: Scalars['Int']
   joinedGroups: Array<Group>
   paidTransactions: Array<Transaction>
   participatedCosts: Array<Cost>
   passwordHash: Scalars['String']
   passwordSalt: Scalars['String']
+  phone?: Maybe<Scalars['String']>
   receivedNotifications: Array<Notification>
   receivedTransactions: Array<Transaction>
   updatedAt?: Maybe<Scalars['DateTime']>
@@ -320,6 +371,12 @@ export type CreateCostMutationVariables = Exact<{
 }>
 
 export type CreateCostMutation = { __typename?: 'Mutation'; createCost: number }
+
+export type EditCostMutationVariables = Exact<{
+  inp: EditCostInput
+}>
+
+export type EditCostMutation = { __typename?: 'Mutation'; editCost: number }
 
 export type GetCostQueryVariables = Exact<{
   inp: Scalars['Int']
@@ -523,7 +580,8 @@ export type SendReminderMutation = {
 }
 
 export type CompleteTransactionMutationVariables = Exact<{
-  inp: Scalars['Int']
+  transactionId: Scalars['Int']
+  fileURL?: InputMaybe<Scalars['String']>
 }>
 
 export type CompleteTransactionMutation = {
@@ -557,9 +615,39 @@ export type GetTransactionsQuery = {
     id: number
     moneyAmount: number
     isCompleted?: boolean | null
+    confirmationFileURL: string
     receiver: { __typename?: 'User'; id: number; username: string }
     payer: { __typename?: 'User'; id: number; username: string }
   }>
+}
+
+export type UploadTransactionConfirmationMutationVariables = Exact<{
+  file: Scalars['Upload']
+}>
+
+export type UploadTransactionConfirmationMutation = {
+  __typename?: 'Mutation'
+  uploadConmfirmationFile: string
+}
+
+export type EditUserMutationVariables = Exact<{
+  inp: EditMeInput
+}>
+
+export type EditUserMutation = { __typename?: 'Mutation'; editMe: number }
+
+export type GetCurrentUserInfoQueryVariables = Exact<{ [key: string]: never }>
+
+export type GetCurrentUserInfoQuery = {
+  __typename?: 'Query'
+  me: {
+    __typename?: 'User'
+    id: number
+    username: string
+    phone?: string | null
+    IBAN?: string | null
+    email: string
+  }
 }
 
 export type GetUsersQueryVariables = Exact<{

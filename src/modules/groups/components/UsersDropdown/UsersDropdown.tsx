@@ -1,4 +1,3 @@
-import { useState, MouseEvent } from 'react'
 import { People, Psychology } from '@mui/icons-material'
 import { Button, Menu, Typography } from '@mui/material'
 import { GetGroupQuery } from 'generated/graphql'

@@ -1,7 +1,12 @@
 import { FunctionComponent } from 'react'
 import { Grid, Typography } from '@mui/material'
 import { paths } from 'config'
-import { Form, LoadingButton, TextField } from 'shared/components'
+import {
+  Form,
+  LoadingButton,
+  PasswordField,
+  TextField,
+} from 'shared/components'
 import { FormWrapper } from '../FormWrapper'
 import { SignUpLink } from './LoginForm.styles'
 import { LoginFormFields, useLoginForm } from './LoginForm.utils'
@@ -23,11 +28,10 @@ const LoginForm: FunctionComponent<LoginFormProps> = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
+            <PasswordField
               name={LoginFormFields.Password}
               placeholder="password"
               fullWidth
-              type="password"
             />
           </Grid>
           <Grid item xs={12}>

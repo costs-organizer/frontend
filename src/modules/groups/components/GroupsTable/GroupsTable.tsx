@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client'
-import { Button, Grid } from '@mui/material'
+import { Button, Grid, Typography } from '@mui/material'
 import { GetGroupsQuery, GetGroupsQueryVariables } from 'generated/graphql'
 import { getGroups } from 'graphql/groups'
 import { DataTable } from 'shared/components'
@@ -20,7 +20,9 @@ const GroupsTable = () => {
     <>
       <CreateGroupModal open={isOpen} onClose={handleClose} />
       <Grid container justifyContent="space-between">
-        <Grid item>My groups</Grid>
+        <Grid item>
+          <Typography variant="h5">My groups</Typography>
+        </Grid>
         <Grid item>
           <Button onClick={handleOpen} variant="contained">
             Create Group

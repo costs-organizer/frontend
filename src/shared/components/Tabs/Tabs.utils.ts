@@ -1,13 +1,15 @@
-import { useState, SyntheticEvent } from 'react'
+import { SyntheticEvent } from 'react'
+import { useQuery, useUpdateQuery } from 'shared/hooks'
 
 export const useCurrentTab = () => {
-  const [currentTab, setCurrentTab] = useState(0)
+  const { currentTab } = useQuery<{ currentTab?: number }>()
+  const updateQuery = useUpdateQuery()
   const handleTabChange = (
     event: SyntheticEvent<Element, Event>,
     value: number
   ) => {
-    setCurrentTab(value)
+    updateQuery({ currentTab: value })
   }
 
-  return { currentTab, handleTabChange }
+  return { currentTab: Number(currentTab), handleTabChange }
 }

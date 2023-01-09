@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const completeTransactionMutation = gql`
-  mutation CompleteTransaction($inp: Int!) {
-    completeTransaction(transactionId: $inp)
+  mutation CompleteTransaction($transactionId: Int!, $fileURL: String) {
+    completeTransaction(transactionId: $transactionId, fileURL: $fileURL)
   }
 `

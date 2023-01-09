@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { DeleteOutline } from '@mui/icons-material'
-import { IconButton } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import {
   RemoveCostMutation,
   RemoveCostMutationVariables,
@@ -34,12 +34,14 @@ const RemoveCostButton = ({ costId }: RemoveCostButtonProps) => {
     ],
   })
   return (
-    <IconButton
-      onClick={() => removeCost({ variables: { inp: costId } })}
-      disabled={loading}
-    >
-      <DeleteOutline />
-    </IconButton>
+    <Tooltip title="Remove cost" placement="top">
+      <IconButton
+        onClick={() => removeCost({ variables: { inp: costId } })}
+        disabled={loading}
+      >
+        <DeleteOutline />
+      </IconButton>
+    </Tooltip>
   )
 }
 

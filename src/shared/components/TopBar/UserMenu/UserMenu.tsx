@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
-import { AccountCircle } from '@mui/icons-material'
-import { Button, Skeleton } from '@mui/material'
+import { AccountCircle, Logout, Person } from '@mui/icons-material'
+import { Button, Menu, MenuItem, Skeleton } from '@mui/material'
 import { LogoutMutation, LogoutMutationVariables } from 'generated/graphql'
 import { logoutMutation, meQuery } from 'graphql/auth'
 import { paths } from 'config'
+import { useUsersMenuDropdown } from './UserMenu.utils'
 
 const LOADER_WIDTH = 80
 
@@ -23,14 +24,37 @@ const UserMenu = ({ name, isLoading }: UserMenuProps) => {
     }
   )
 
+  const {
+    dropDownAnchorEl,
+    handleDropdownClose,
+    handleDropdownOpen,
+    isDropdownOpen,
+  } = useUsersMenuDropdown()
+
   return (
-    <Button
-      onClick={() => logout()}
-      color="inherit"
-      startIcon={<AccountCircle />}
-    >
-      {isLoading ? <Skeleton width={LOADER_WIDTH} /> : name}
-    </Button>
+    <>
+      <Button
+        onClick={anchorEl => handleDropdownOpen(anchorEl)}
+        color="inherit"
+        startIcon={<AccountCircle />}
+      >
+        {isLoading ? <Skeleton width={LOADER_WIDTH} /> : name}
+      </Button>
+      <Menu
+        open={isDropdownOpen}
+        anchorEl={dropDownAnchorEl}
+        onClose={handleDropdownClose}
+      >
+        <MenuItem onClick={() => logout()}>
+          <Logout />
+          &nbsp;&nbsp;Logout
+        </MenuItem>
+        <MenuItem onClick={() => navigate(paths.userInfo)}>
+          <Person />
+          &nbsp;&nbsp;My Profile
+        </MenuItem>
+      </Menu>
+    </>
   )
 }
 

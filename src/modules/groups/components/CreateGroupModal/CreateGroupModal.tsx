@@ -39,7 +39,7 @@ const CreateGroupModal = (props: DialogProps) => {
     <Dialog {...props}>
       <Form {...formProps}>
         <DialogTitle>Create new group</DialogTitle>
-        <DialogContent container>
+        <DialogContent container sx={{ width: 500 }}>
           <Grid item xs={12}>
             <TextField name={NewGroupFields.Name} label="Name" />
           </Grid>

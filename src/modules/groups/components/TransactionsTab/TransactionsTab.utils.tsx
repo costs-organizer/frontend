@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
-import { ro } from 'date-fns/locale'
 import {
   GetTransactionsQuery,
   GetTransactionsQueryVariables,
@@ -12,10 +11,23 @@ import { getTranstactionsQuery } from 'graphql/transactions'
 import { Column } from 'shared/components'
 import { ArrayElement } from 'shared/utils'
 import ActionsColumn from './ActionsColumn'
-import { CompleteTransactionButton } from './CompleteTransactionButton'
-import SendReminderButton from './SendReminderButton'
 
 export type TransactionType = ArrayElement<GetTransactionsQuery['transactions']>
+
+export const useCompleteTransactionModal = () => {
+  const [transactionToComplete, setTransactionToComplete] =
+    useState<TransactionType | null>(null)
+
+  const handleModalOpen = (transaction: TransactionType) =>
+    setTransactionToComplete(transaction)
+  const handleModalClose = () => setTransactionToComplete(null)
+
+  return {
+    transactionToComplete,
+    handleModalClose,
+    handleModalOpen,
+  }
+}
 
 export const useTransactionsTable = () => {
   const { data: userData } = useQuery<MeQuery>(meQuery)
@@ -27,6 +39,8 @@ export const useTransactionsTable = () => {
   >(getTranstactionsQuery, {
     variables: { inp: { groupId: Number(groupId), filterByUser: showOnlyMy } },
   })
+  const { handleModalClose, handleModalOpen, transactionToComplete } =
+    useCompleteTransactionModal()
 
   const columns: Column<TransactionType>[] = useMemo(
     () => [
@@ -46,11 +60,15 @@ export const useTransactionsTable = () => {
         label: 'actions',
         renderValue: row =>
           userData?.me.id ? (
-            <ActionsColumn transaction={row} userId={userData?.me.id} />
+            <ActionsColumn
+              transaction={row}
+              userId={userData?.me.id}
+              onConfirm={handleModalOpen}
+            />
           ) : null,
       },
     ],
-    [userData?.me.id]
+    [handleModalOpen, userData?.me.id]
   )
 
   return {
@@ -60,5 +78,7 @@ export const useTransactionsTable = () => {
     refetch,
     showOnlyMy,
     transactions: data?.transactions,
+    transactionToComplete,
+    handleModalClose,
   }
 }

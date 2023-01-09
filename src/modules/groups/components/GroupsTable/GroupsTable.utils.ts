@@ -1,5 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
+import { Badge } from '@mui/material'
+import { format, parseISO } from 'date-fns'
 import { GetGroupsQuery } from 'generated/graphql'
 import { paths } from 'config'
 import { Column } from 'shared/components'
@@ -19,8 +21,13 @@ export const useCoulumns = (): Column<GroupType>[] => {
         renderValue: (row: GroupType) => row.members.length,
       },
       {
+        label: 'created by',
+        renderValue: (row: GroupType) => row.createdBy.username,
+      },
+      {
         label: 'date of creation',
-        renderValue: (row: GroupType) => row.members.length,
+        renderValue: (row: GroupType) =>
+          format(parseISO(row.createdAt), 'hh:mm dd/MM/yyyy'),
       },
     ],
     []
