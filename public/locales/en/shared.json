@@ -1,0 +1,16 @@
+{
+  "breadcrumbs": {
+    "root": "Home"
+  },
+  "components": {
+    "errorBoundary": {
+      "title": "Something went wrong",
+      "reset": "Reload"
+    },
+    "notFound": {
+      "heading": "Ooops!",
+      "description": "We can't seem to find the page you are looking for.",
+      "linkLabel": "Go to home"
+    }
+  }
+}
