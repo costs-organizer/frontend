@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
-import { Badge } from '@mui/material'
 import { format, parseISO } from 'date-fns'
 import { GetGroupsQuery } from 'generated/graphql'
 import { paths } from 'config'

@@ -5,9 +5,7 @@ import { CostsTabProvider } from '../../utils'
 import NewCostModal from '../NewCostModal'
 import { useCostsTable } from './CostsTab.utils'
 
-interface CostsTabProps {}
-
-const CostsTab = (props: CostsTabProps) => {
+const CostsTab = () => {
   const {
     columns,
     costs,

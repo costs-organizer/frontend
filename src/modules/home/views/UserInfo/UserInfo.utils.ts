@@ -8,6 +8,7 @@ import {
   GetCurrentUserInfoQuery,
   GetCurrentUserInfoQueryVariables,
 } from 'generated/graphql'
+import { meQuery } from 'graphql/auth'
 import { editUserMutation, getCurrentUserInfoQuery } from 'graphql/users'
 import { validateIBAN } from 'ibantools'
 import { useSnackbar } from 'notistack'
@@ -118,7 +119,7 @@ export const useOnSubmit = () => {
   >(getCurrentUserInfoQuery)
 
   const onCompleted = useCallback(() => {
-    enqueueSnackbar('Changes saved successfully')
+    enqueueSnackbar('Changes saved successfully', { variant: 'success' })
   }, [enqueueSnackbar])
   const onError = useCallback(
     (error: ApolloError) => {
@@ -132,6 +133,7 @@ export const useOnSubmit = () => {
       if (!data?.me.id) return
 
       editUser({
+        refetchQueries: [meQuery],
         onError,
         onCompleted,
         variables: {

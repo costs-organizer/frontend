@@ -41,8 +41,8 @@ export interface NewCostFormValues {
 
 export const getDefaultValues = (cost?: CostType | null): NewCostFormValues => {
   return {
-    description: cost?.name || '',
-    name: cost?.description || '',
+    description: cost?.description || '',
+    name: cost?.name || '',
     participants:
       cost?.participants.map(({ id, username }) => ({
         id: id,
